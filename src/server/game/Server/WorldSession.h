@@ -921,10 +921,10 @@ class WorldSession
         void HandleEnterPlayerVehicle(WorldPacket &data);
         void HandleUpdateProjectilePosition(WorldPacket& recvPacket);
 
-        // Refer-A-Friend
+/*        // Refer-A-Friend
         void HandleGrantLevel(WorldPacket& recv_data);
         void HandleAcceptGrantLevel(WorldPacket& recv_data);
-
+*/
     private:
         void InitializeQueryCallbackParameters();
         void ProcessQueryCallbacks();

@@ -725,7 +725,7 @@ enum TransferAbortReason
     TRANSFER_ABORT_MAP_NOT_ALLOWED          = 0x10,         // Map can't be entered at this time.
 };
 
-enum ReferAFriendError
+/*enum ReferAFriendError
 {
     ERR_REFER_A_FRIEND_NONE                          = 0x00,
     ERR_REFER_A_FRIEND_NOT_REFERRED_BY               = 0x01,
@@ -741,7 +741,7 @@ enum ReferAFriendError
     ERR_REFER_A_FRIEND_SUMMON_COOLDOWN               = 0x0B,
     ERR_REFER_A_FRIEND_INSUF_EXPAN_LVL               = 0x0C,
     ERR_REFER_A_FRIEND_SUMMON_OFFLINE_S              = 0x0D
-};
+};*/
 
 enum InstanceResetWarningType
 {
