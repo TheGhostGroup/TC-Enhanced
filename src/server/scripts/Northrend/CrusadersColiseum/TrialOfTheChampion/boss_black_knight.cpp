@@ -480,7 +480,7 @@ public:
         void Reset()
         {
             ASSERT(vehicle);
-            vehicle->Reset();
+			me->SetVisible(true);
         }
 		
         void WaypointReached(uint32 uiPointId)

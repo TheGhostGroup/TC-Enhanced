@@ -311,14 +311,14 @@ bool ChatHandler::HandleAppearCommand(const char* args)
 
             // if the player or the player's group is bound to another instance
             // the player will not be bound to another one
-            InstancePlayerBind *pBind = _player->GetBoundInstance(target->GetMapId(), target->GetDifficulty(cMap->IsRaid()));
+            InstancePlayerBind* pBind = _player->GetBoundInstance(target->GetMapId(), target->GetDifficulty(cMap->IsRaid()));
             if (!pBind)
             {
                 Group* group = _player->GetGroup();
                 // if no bind exists, create a solo bind
-                InstanceGroupBind *gBind = group ? group->GetBoundInstance(target) : NULL;                // if no bind exists, create a solo bind
+                InstanceGroupBind* gBind = group ? group->GetBoundInstance(target) : NULL;                // if no bind exists, create a solo bind
                 if (!gBind)
-                    if (InstanceSave *save = sInstanceSaveMgr->GetInstanceSave(target->GetInstanceId()))
+                    if (InstanceSave* save = sInstanceSaveMgr->GetInstanceSave(target->GetInstanceId()))
                         _player->BindToInstance(save, !save->CanReset());
             }
 
@@ -421,7 +421,7 @@ bool ChatHandler::HandleTaxiCheatCommand(const char* args)
 
     std::string argstr = (char*)args;
 
-    Player *chr = getSelectedPlayer();
+    Player* chr = getSelectedPlayer();
     if (!chr)
     {
         chr=m_session->GetPlayer();
@@ -476,7 +476,7 @@ bool ChatHandler::HandleLookupAreaCommand(const char* args)
     // Search in AreaTable.dbc
     for (uint32 areaflag = 0; areaflag < sAreaStore.GetNumRows (); ++areaflag)
     {
-        AreaTableEntry const *areaEntry = sAreaStore.LookupEntry (areaflag);
+        AreaTableEntry const* areaEntry = sAreaStore.LookupEntry (areaflag);
         if (areaEntry)
         {
             int loc = GetSessionDbcLocale ();
@@ -688,7 +688,7 @@ bool ChatHandler::HandleJailCommand(const char *args)
         }
     }
 
-    Player *chr = sObjectMgr->GetPlayer(GUID);
+    Player *chr = ObjectAccessor::FindPlayer(GUID);
     if (!chr)
     {
         uint32 jail_guid = GUID_LOPART(GUID);
@@ -830,7 +830,7 @@ bool ChatHandler::HandleUnJailCommand(const char *args)
     else cname = charname;
 
     uint64 GUID = sObjectMgr->GetPlayerGUIDByName(cname.c_str());
-    Player *chr = sObjectMgr->GetPlayer(GUID);
+    Player *chr = ObjectAccessor::FindPlayer(GUID);
 
     if (chr)
     {
@@ -941,7 +941,7 @@ bool ChatHandler::HandleGroupSummonCommand(const char* args)
     if (HasLowerSecurity(target, 0))
         return false;
 
-    Group *grp = target->GetGroup();
+    Group* grp = target->GetGroup();
 
     std::string nameLink = GetNameLink(target);
 
@@ -966,9 +966,9 @@ bool ChatHandler::HandleGroupSummonCommand(const char* args)
         return false;
     }
 
-    for (GroupReference *itr = grp->GetFirstMember(); itr != NULL; itr = itr->next())
+    for (GroupReference* itr = grp->GetFirstMember(); itr != NULL; itr = itr->next())
     {
-        Player *pl = itr->getSource();
+        Player* pl = itr->getSource();
 
         if (!pl || pl == m_session->GetPlayer() || !pl->GetSession())
             continue;

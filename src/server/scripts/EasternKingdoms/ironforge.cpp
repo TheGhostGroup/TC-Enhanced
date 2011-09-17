@@ -636,11 +636,11 @@ class npc_shoot_bunny : public CreatureScript
 
             void Reset()
             {
-                if (me->FindNearestCreature(NPC_TARGET, 3.0f, true))
-                    if (Unit* vehSummoner = me->ToTempSummon()->GetSummoner())
-                        if (Vehicle* vehicle = vehSummoner->GetVehicleKit())
-                            if (Unit* driver = vehicle->GetPassenger(0))
-                                driver->CastSpell(driver, SPELL_SHOOT_CREDIT, true);
+                //if (me->FindNearestCreature(NPC_TARGET, 3.0f, true))
+                    //if (Unit* vehSummoner = me->ToTempSummon()->GetSummoner())
+                        //if (Vehicle* vehicle = vehSummoner->GetVehicleKit())
+                            //if (Unit* driver = vehicle->GetPassenger(0))
+                                //driver->CastSpell(driver, SPELL_SHOOT_CREDIT, true);
             }
         };
 

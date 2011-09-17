@@ -54,8 +54,6 @@ set(scripts_STAT_SRCS
   EasternKingdoms/Gnomeregan/instance_gnomeregan.cpp
   EasternKingdoms/Gnomeregan/gnomeregan.cpp
   EasternKingdoms/Gnomeregan/gnomeregan.h
-  EasternKingdoms/OperationGnomeregan/operation_gnomeregan.cpp
-  EasternKingdoms/OperationGnomeregan/operation_gnomeregan.h
   EasternKingdoms/redridge_mountains.cpp
   EasternKingdoms/BlackrockDepths/boss_high_interrogator_gerstahn.cpp
   EasternKingdoms/BlackrockDepths/boss_gorosh_the_dervish.cpp
