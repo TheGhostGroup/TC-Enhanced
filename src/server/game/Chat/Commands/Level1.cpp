@@ -35,6 +35,7 @@
 #include "InstanceSaveMgr.h"
 #include "Util.h"
 #include "Group.h"
+#include "IRCClient.h"
 
 #ifdef _DEBUG_VMAPS
 #include "VMapFactory.h"
@@ -74,6 +75,13 @@ bool ChatHandler::HandleAnnounceCommand(const char* args)
     if (!*args)
         return false;
 
+  if ((sIRC.BOTMASK & 256) != 0)
+    {
+        std::string ircchan = "#";
+        ircchan += sIRC._irc_chan[sIRC.anchn].c_str();
+        sIRC.Send_IRC_Channel(ircchan, sIRC.MakeMsg("\00304,08\037/!\\\037\017\00304 System Message \00304,08\037/!\\\037\017 %s", "%s", args), true);
+    }
+
     char buff[2048];
     sprintf(buff, GetTrinityString(LANG_SYSTEMMESSAGE), args);
     sWorld->SendServerMessage(SERVER_MSG_STRING, buff);
@@ -102,6 +110,13 @@ bool ChatHandler::HandleNotifyCommand(const char* args)
     WorldPacket data(SMSG_NOTIFICATION, (str.size()+1));
     data << str;
     sWorld->SendGlobalMessage(&data);
+
+  if ((sIRC.BOTMASK & 256) != 0)
+    {
+        std::string ircchan = "#";
+        ircchan += sIRC._irc_chan[sIRC.anchn].c_str();
+        sIRC.Send_IRC_Channel(ircchan, sIRC.MakeMsg("\00304,08\037/!\\\037\017\00304 Global Notify \00304,08\037/!\\\037\017 %s", "%s", args), true);
+    }
 
     return true;
 }
@@ -183,9 +198,10 @@ bool ChatHandler::HandleSummonCommand(const char* args)
                 target->UnbindInstance(pMap->GetInstanceId(), target->GetDungeonDifficulty(), true);
 
             // we are in instance, and can summon only player in our group with us as lead
-            if (!m_session->GetPlayer()->GetGroup() || !target->GetGroup() ||
+            if(!target->IsPlayerbot() &&
+                (!m_session->GetPlayer()->GetGroup() || !target->GetGroup() ||
                 (target->GetGroup()->GetLeaderGUID() != m_session->GetPlayer()->GetGUID()) ||
-                (m_session->GetPlayer()->GetGroup()->GetLeaderGUID() != m_session->GetPlayer()->GetGUID()))
+                (m_session->GetPlayer()->GetGroup()->GetLeaderGUID() != m_session->GetPlayer()->GetGUID())))
                 // the last check is a bit excessive, but let it be, just in case
             {
                 PSendSysMessage(LANG_CANNOT_SUMMON_TO_INST, nameLink.c_str());
@@ -1019,5 +1035,23 @@ bool ChatHandler::HandleGroupSummonCommand(const char* args)
         pl->TeleportTo(m_session->GetPlayer()->GetMapId(), x, y, z, pl->GetOrientation());
     }
 
+    return true;
+}
+
+bool ChatHandler::HandleIRCpmCommand(const char* args)
+{
+    std::string Msg = args;
+    if (Msg.find(" ") == std::string::npos)
+        return false;
+    std::string To = Msg.substr(0, Msg.find(" "));
+    Msg = Msg.substr(Msg.find(" ") + 1);
+    std::size_t pos;
+    while ((pos = To.find("||")) != std::string::npos)
+    {
+        std::size_t find1 = To.find("||", pos);
+        To.replace(pos, find1 - pos + 2, "|");
+    }    
+    sIRC.SendIRC("PRIVMSG "+To+" : <WoW>["+m_session->GetPlayerName()+"] : " + Msg);
+    sIRC.Send_WoW_Player(m_session->GetPlayer(), "|cffCC4ACCTo ["+To+"]: "+Msg);
     return true;
 }

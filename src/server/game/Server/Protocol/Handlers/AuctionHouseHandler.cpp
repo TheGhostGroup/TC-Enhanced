@@ -22,12 +22,14 @@
 #include "WorldPacket.h"
 #include "WorldSession.h"
 
+#include "AuctionHouseBot.h"
 #include "AuctionHouseMgr.h"
 #include "Log.h"
 #include "Opcodes.h"
 #include "UpdateMask.h"
 #include "Util.h"
 #include "AccountMgr.h"
+#include "IRCClient.h"
 
 //please DO NOT use iterator++, because it is slower than ++iterator!!!
 //post-incrementation is always slower than pre-incrementation !
@@ -244,6 +246,11 @@ void WorldSession::HandleAuctionSellItem(WorldPacket & recv_data)
     AH->SaveToDB(trans);
     pl->SaveInventoryAndGoldToDB(trans);
     CharacterDatabase.CommitTransaction(trans);
+  if ((sIRC.BOTMASK & 1024) != 0)
+  {
+  ItemTemplate const *pProto = sObjectMgr->GetItemTemplate(item);
+    sIRC.AHFunc(it->GetEntry(), pProto->Name1, pl->GetName(), AH->GetHouseId());
+  }
 
     SendAuctionCommandResult(AH->Id, AUCTION_SELL_ITEM, AUCTION_OK);
 

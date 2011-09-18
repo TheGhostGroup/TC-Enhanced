@@ -21,6 +21,7 @@
 
 #include "SharedDefines.h"
 #include "Player.h"
+#include "../TriniChat/IRCClient.h"
 
 #include <vector>
 
@@ -132,6 +133,7 @@ class ChatHandler
         bool ShowHelpForCommand(ChatCommand* table, const char* cmd);
         bool ShowHelpForSubCommands(ChatCommand* table, char const* cmd, char const* subcmd);
 
+        bool HandleAHBotOptionsCommand(const char * args);
         bool HandleNameAnnounceCommand(const char* args);
         bool HandleGMNameAnnounceCommand(const char* args);
         bool HandleGMAnnounceCommand(const char* args);
@@ -178,6 +180,9 @@ class ChatHandler
         bool HandleBindSightCommand(const char* args);
         bool HandleUnbindSightCommand(const char* args);
 
+        bool HandlePlayerbotCommand(const char *args);
+        bool HandlePlayerbotMainTankCommand(const char *args);
+
         bool HandleGuildCreateCommand(const char* args);
         bool HandleGuildInviteCommand(const char* args);
         bool HandleGuildUninviteCommand(const char* args);
@@ -216,6 +221,10 @@ class ChatHandler
         bool HandlePDumpLoadCommand(const char *args);
         bool HandlePDumpWriteCommand(const char *args);
 
+        bool HandleQuestAdd(const char * args);
+        bool HandleQuestRemove(const char * args);
+        bool HandleQuestComplete(const char * args);
+
         bool HandleResetAchievementsCommand(const char * args);
         bool HandleResetAllCommand(const char * args);
         bool HandleResetHonorCommand(const char * args);
@@ -228,6 +237,7 @@ class ChatHandler
         bool HandleSendMailCommand(const char* args);
         bool HandleSendMessageCommand(const char * args);
         bool HandleSendMoneyCommand(const char* args);
+		bool HandleIRCpmCommand(const char* args);
 
         bool HandleServerCorpsesCommand(const char* args);
         bool HandleServerExitCommand(const char* args);
@@ -356,6 +366,7 @@ class ChatHandler
 		
         bool HandlePlayAllCommand(const char* args);
         bool HandleRepairitemsCommand(const char* args);
+		bool HandleIRCRelogCommand(const char *args);
 
         bool HandleTempGameObjectCommand(const char* args);
 

@@ -16,6 +16,15 @@ set(scripts_STAT_SRCS
   Custom/npc_lottery.cpp
   Custom/duel_reset.cpp
   Custom/argent_tournament.cpp
+  Custom/beastmaster.cpp
+  Custom/npcbuff.cpp
+  Custom/city_conquest_boss.cpp
+  Custom/city_conquest_generic.cpp
+  Custom/city_conquest_portal.cpp
+  Custom/city_conquest_spawner.cpp
+  Custom/professionnpc.cpp
+  Custom/script_bot_giver.cpp
+  Custom/levelnpc.cpp
 )
 
 message("  -> Prepared: Custom")

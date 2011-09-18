@@ -1151,6 +1151,13 @@ InstantLogout = 1
 DisableWaterBreath = 4
 
 #
+#    Enable or Disable "Fatigue" timer
+#           default = 1 (enabled)
+#                   = 0 (disabled)
+
+fatigue.enabled = 1
+
+#
 #    AllFlightPaths
 #        Description: Character knows all flight paths (of both factions) after creation.
 #        Default:     0 - (Disabled)
@@ -1511,6 +1518,14 @@ AllowTwoSide.Trade = 0
 #                     0 - (Disabled)
 
 TalentsInspecting = 1
+
+#    Fake.WHO.List 
+#        Add fake players to fill in WHO LIST (who is online list, "O" button) if there is less then 
+#        49 real players online (need to set online=2 in character database in order to work) 
+#        Default: 0 (disabled) 
+#                 1 (enabled) 
+
+Fake.Who.List = 0 
 
 #
 ###################################################################################################
@@ -2053,10 +2068,18 @@ Rate.Drop.Item.ReferencedAmount = 1
 #        Default:     1 - (Rate.XP.Kill)
 #                     1 - (Rate.XP.Quest)
 #                     1 - ( Rate.XP.Explore)
+#    Rate.XP.Kill.Premium
+#    Rate.XP.Quest.Premium
+#    Rate.XP.Explore.Premium
+#        XP rates Premium modifier
+#        Default: 1
 
 Rate.XP.Kill    = 1
 Rate.XP.Quest   = 1
 Rate.XP.Explore = 1
+Rate.XP.Kill.Premium    = 1
+Rate.XP.Quest.Premium   = 1
+Rate.XP.Explore.Premium = 1
 
 #
 #    Rate.RepairCost
@@ -2525,6 +2548,289 @@ Network.TcpNodelay = 1
 #
 ###################################################################################################
 
+###############################################################################
+# AUCTION HOUSE BOT SETTINGS
+#
+#    AuctionHouseBot.DEBUG
+#        Enable/Disable Debugging output
+#    Default 0 (disabled)
+#
+#    AuctionHouseBot.DEBUG_FILTERS
+#        Enable/Disable Debugging output from Filters
+#    Default 0 (disabled)
+#
+#    AuctionHouseBot.EnableSeller
+#        Enable/Disable the part of AHBot that puts items up for auction
+#    Default 0 (disabled)
+#
+#    AuctionHouseBot.EnableBuyer
+#        Enable/Disable the part of AHBot that buys items from players
+#    Default 0 (disabled)
+#
+#    AuctionHouseBot.UseBuyPriceForSeller
+#        Should the Seller use BuyPrice or SellPrice to determine Bid Prices
+#    Default 0 (use SellPrice)
+#
+#    AuctionHouseBot.UseBuyPriceForBuyer
+#        Should the Buyer use BuyPrice or SellPrice to determine Bid Prices
+#    Default 0 (use SellPrice)
+#
+#    Auction House Bot character data
+#        AuctionHouseBot.Account is the account number
+#         (in realmd->account table) of the player you want to run
+#         as the auction bot.
+#        AuctionHouseBot.GUID is the GUID (in characters->characters table)
+#         of the player you want to run as the auction bot.
+#    Default: 0 (Auction House Bot disabled)
+#
+#    AuctionHouseBot.ItemsPerCycle
+#        Number of Items to Add/Remove from the AH during mass operations
+#    Default 200
+#
+###############################################################################
+
+AuctionHouseBot.DEBUG = 0
+AuctionHouseBot.DEBUG_FILTERS = 0
+AuctionHouseBot.EnableSeller = 0
+AuctionHouseBot.EnableBuyer = 0
+AuctionHouseBot.UseBuyPriceForSeller = 0
+AuctionHouseBot.UseBuyPriceForBuyer = 0
+AuctionHouseBot.Account = 0
+AuctionHouseBot.GUID = 0
+AuctionHouseBot.ItemsPerCycle = 200
+
+###############################################################################
+# AUCTION HOUSE BOT FILTERS PART 1
+#
+#    AuctionHouseBot.VendorItems
+#        Include items that can be bought from vendors.
+#    Default 0 (False)
+#
+#    AuctionHouseBot.VendorTradeGoods
+#        Include Trade Goods that can be bought from vendors.
+#    Default 0 (False)
+#
+#    AuctionHouseBot.LootItems
+#        Include items that can be looted or fished for.
+#    Default 1 (True)
+#
+#    AuctionHouseBot.LootTradeGoods
+#        Include Trade Goods that can be looted or fished for.
+#    Default 1 (True)
+#
+#    AuctionHouseBot.OtherItems
+#        Include misc. items.
+#    Default 0 (False)
+#
+#    AuctionHouseBot.OtherTradeGoods
+#        Include misc. Trade Goods.
+#    Default 0 (False)
+#
+#    AuctionHouseBot.Bonding_types
+#        Indicates which bonding types to allow seller to put up for auction
+#            No_Bind
+#             Default 1 (True)
+#            Bind_When_Picked_Up
+#             Default 0 (False)
+#            Bind_When_Equipped
+#             Default 1 (True)
+#            Bind_When_Use
+#             Default 1 (True)
+#            Bind_Quest_Item
+#             Default 0 (False)
+#
+#    AuctionHouseBot.DisableBeta_PTR_Unused
+#        Disable certain items that are usually unavailable to Players
+#    Default 0 (False)
+#
+#    AuctionHouseBot.DisablePermEnchant
+#        Disable Items with a Permanent Enchantment
+#    Default 0 (False)
+#
+#    AuctionHouseBot.DisableConjured
+#        Disable Conjured Items
+#    Default 0 (False)
+#
+#    AuctionHouseBot.DisableGems
+#        Disable Gems
+#    Default 0 (False)
+#
+#    AuctionHouseBot.DisableMoney
+#        Disable Items that are used as money
+#    Default 0 (False)
+#
+#    AuctionHouseBot.DisableMoneyLoot
+#        Disable Items that have Money as a loot
+#    Default 0 (False)
+#
+#    AuctionHouseBot.DisableLootable
+#        Disable Items that have other items as loot
+#    Default 0 (False)
+#
+#    AuctionHouseBot.DisableKeys
+#        Disable Items that are keys
+#    Default 0 (False)
+#
+#    AuctionHouseBot.DisableDuration
+#        Disable Items with a duration
+#    Default 0 (False)
+#
+#    AuctionHouseBot.DisableBOP_Or_Quest_NoReqLevel
+#        Disable items that are BOP or Quest Item
+#        with a Required level that is less than the Item Level
+#        (This prevents a level 10 with a level 60 weapon or armor)
+#        (May need further refinement)
+#    Default 0 (False)
+#
+###############################################################################
+
+AuctionHouseBot.VendorItems = 0
+AuctionHouseBot.VendorTradeGoods = 0
+AuctionHouseBot.LootItems = 1
+AuctionHouseBot.LootTradeGoods = 1
+AuctionHouseBot.OtherItems = 0
+AuctionHouseBot.OtherTradeGoods = 0
+AuctionHouseBot.No_Bind = 1
+AuctionHouseBot.Bind_When_Picked_Up = 0
+AuctionHouseBot.Bind_When_Equipped = 1
+AuctionHouseBot.Bind_When_Use = 1
+AuctionHouseBot.Bind_Quest_Item = 0
+AuctionHouseBot.DisableBeta_PTR_Unused = 0
+AuctionHouseBot.DisablePermEnchant = 0
+AuctionHouseBot.DisableConjured = 0
+AuctionHouseBot.DisableGems = 0
+AuctionHouseBot.DisableMoney = 0
+AuctionHouseBot.DisableMoneyLoot = 0
+AuctionHouseBot.DisableLootable = 0
+AuctionHouseBot.DisableKeys = 0
+AuctionHouseBot.DisableDuration = 0
+AuctionHouseBot.DisableBOP_Or_Quest_NoReqLevel = 0
+
+###############################################################################
+# AUCTION HOUSE BOT FILTERS PART 2
+#
+#     These Filters are boolean (0 or 1) and will disable items that are
+#     specifically meant for the Class named.
+#     (UnusedClass is Class 10, which was skipped for some reason)
+#     Default 0 (allowed)
+#
+###############################################################################
+
+AuctionHouseBot.DisableWarriorItems = 0
+AuctionHouseBot.DisablePaladinItems = 0
+AuctionHouseBot.DisableHunterItems = 0
+AuctionHouseBot.DisableRogueItems = 0
+AuctionHouseBot.DisablePriestItems = 0
+AuctionHouseBot.DisableDKItems = 0
+AuctionHouseBot.DisableShamanItems = 0
+AuctionHouseBot.DisableMageItems = 0
+AuctionHouseBot.DisableWarlockItems = 0
+AuctionHouseBot.DisableUnusedClassItems = 0
+AuctionHouseBot.DisableDruidItems = 0
+
+###############################################################################
+# AUCTION HOUSE BOT FILTERS PART 3
+#
+#    AuctionHouseBot.DisableItemsBelowLevel
+#        Prevent Seller from listing Items below this Level
+#    Default 0 (Off)
+#
+#    AuctionHouseBot.DisableItemsAboveLevel
+#        Prevent Seller from listing Items above this Level
+#    Default 0 (Off)
+#
+#    AuctionHouseBot.DisableTGsBelowLevel
+#        Prevent Seller from listing Trade Goods below this Level
+#    Default 0 (Off)
+#
+#    AuctionHouseBot.DisableTGsAboveLevel
+#        Prevent Seller from listing Trade Goods above this Level
+#    Default 0 (Off)
+#
+#    AuctionHouseBot.DisableItemsBelowGUID
+#        Prevent Seller from listing Items below this GUID
+#    Default 0 (Off)
+#
+#    AuctionHouseBot.DisableItemsAboveGUID
+#        Prevent Seller from listing Items above this GUID
+#    Default 0 (Off)
+#
+#    AuctionHouseBot.DisableTGsBelowGUID
+#        Prevent Seller from listing Trade Goods below this GUID
+#    Default 0 (Off)
+#
+#    AuctionHouseBot.DisableTGsAboveGUID
+#        Prevent Seller from listing Trade Goods above this GUID
+#    Default 0 (Off)
+#
+#    AuctionHouseBot.DisableItemsBelowReqLevel
+#        Prevent Seller from listing Items below this Required Level
+#    Default 0 (Off)
+#
+#    AuctionHouseBot.DisableItemsAboveReqLevel
+#        Prevent Seller from listing Items above this Required Level
+#    Default 0 (Off)
+#
+#    AuctionHouseBot.DisableTGsBelowReqLevel
+#        Prevent Seller from listing Trade Goods below this Required Level
+#    Default 0 (Off)
+#
+#    AuctionHouseBot.DisableTGsAboveReqLevel
+#        Prevent Seller from listing Trade Goods above this Required Level
+#    Default 0 (Off)
+#
+#    AuctionHouseBot.DisableItemsBelowReqSkillRank
+#        Prevent Seller from listing Items below this Required Skill Rank
+#    Default 0 (Off)
+#
+#    AuctionHouseBot.DisableItemsAboveReqSkillRank
+#        Prevent Seller from listing Items above this Required Skill Rank
+#    Default 0 (Off)
+#
+#    AuctionHouseBot.DisableTGsBelowReqSkillRank
+#        Prevent Seller from listing Trade Goods below this Required Skill Rank
+#    Default 0 (Off)
+#
+#    AuctionHouseBot.DisableTGsAboveReqSkillRank
+#        Prevent Seller from listing Trade Goods above this Required Skill Rank
+#    Default 0 (Off)
+#
+###############################################################################
+
+AuctionHouseBot.DisableItemsBelowLevel = 0
+AuctionHouseBot.DisableItemsAboveLevel = 0
+AuctionHouseBot.DisableTGsBelowLevel = 0
+AuctionHouseBot.DisableTGsAboveLevel = 0
+AuctionHouseBot.DisableItemsBelowGUID = 0
+AuctionHouseBot.DisableItemsAboveGUID = 0
+AuctionHouseBot.DisableTGsBelowGUID = 0
+AuctionHouseBot.DisableTGsAboveGUID = 0
+AuctionHouseBot.DisableItemsBelowReqLevel = 0
+AuctionHouseBot.DisableItemsAboveReqLevel = 0
+AuctionHouseBot.DisableTGsBelowReqLevel = 0
+AuctionHouseBot.DisableTGsAboveReqLevel = 0
+AuctionHouseBot.DisableItemsBelowReqSkillRank = 0
+AuctionHouseBot.DisableItemsAboveReqSkillRank = 0
+AuctionHouseBot.DisableTGsBelowReqSkillRank = 0
+AuctionHouseBot.DisableTGsAboveReqSkillRank = 0
+
+###############################################################################
+# AUCTION HOUSE BOT GLYPHS PART
+#
+#    AuctionHouseBot.SellGlyphs
+#    Default 0 (Off)
+#
+###############################################################################
+
+AuctionHouseBot.SellGlyphs = 0
+AuctionHouseBot.GlyphsCount = 0
+AuctionHouseBot.DisableGlyphBelowLevel = 0
+AuctionHouseBot.DisableGlyphAboveLevel = 0
+AuctionHouseBot.GlyphBuyOutPriceMin = 0
+AuctionHouseBot.GlyphBuyOutPriceMax = 0
+AuctionHouseBot.GlyphBidPriceMin = 0
+AuctionHouseBot.GlyphBidPriceMax = 0
+
 ###################################################################################################
 # CONSOLE AND REMOTE ACCESS
 #
@@ -2937,3 +3243,440 @@ OutdoorPvP.Wintergrasp.Antifarm.Atk = 5
 OutdoorPvP.Wintergrasp.Antifarm.Def = 5
 OutdoorPvP.Wintergrasp.Minlevel = 74
 OutdoorPvP.Wintergrasp.MaxPlayers = 100
+
+###################################################################################################
+#
+# BeastMaster Configuration
+#
+# BeastMaster Hunter Only
+#                 = 0 (Anyone can use)
+#         default = 1 (Hunter only)
+
+BeastMaster.OnlyHunter = 0
+
+# BeastMaster Enable Exotic Pets
+#                 = 0  (Anyone Can get Exotic pets)
+#         default = 1  (Can only get Exotic Pets if you know how)
+
+BeastMaster.EnableExotic = 1
+
+# Cost of Normal Pet (in copper)
+#         default = 100000 (10 gold)
+
+BeastMaster.NormalCost = 100000
+
+# Cost of Exotic Pet (in copper)
+#         default = 1000000 (100 gold)
+
+BeastMaster.ExoticCost = 1000000
+
+# Use Tokens instead of gold
+#         default = 0 (Use Gold)
+#                 = 1 (Use Tokens)
+
+BeastMaster.UseTokens = 0
+
+# Entry number of "token" Item
+#         default = 0 (No item. BeastMaster.UseTokens must = 0)
+#                 = n (n = entry number of item)
+
+BeastMaster.ItemEntryNum = 99999
+
+# Number of "Tokens" for normal pet
+#                 = n (n = number of tokens)
+
+BeastMaster.NormalTokens = 100
+
+# Number of "Tokens" for exotic pet
+#                 = n (n = number of tokens)
+
+BeastMaster.ExoticTokens = 200
+
+################################################################################
+
+# NPC Buff rewritten by LordPsyan
+#
+#        GM Only
+#         Default 0 = Any Player
+#                 1 = GM1 or higher
+
+Npc_Buff.OnlyGMs = 0
+
+#     Enables Small Buff
+#         Default 0 = Disable
+#                 1 = Enable
+
+Npc_Buff.EnableSmallBuff = 1
+
+#     Enables Geat Buff
+#         Default 0 = Disable
+#                 1 = Enable
+
+Npc_Buff.EnableGreatBuff = 1
+
+#     Enables GM Only Buff
+#         Default 0 = Disable
+#                 1 = Enable
+
+Npc_Buff.EnableGMBuff = 1
+
+#     Enables Player Tools
+#         Default 0 = Disable
+#                 1 = Enable
+
+Npc_Buff.EnablePlayerTools = 1
+
+#     Enables Remove Res Sickness
+#         Default 0 = Disable
+#                 1 = Enable
+
+Npc_Buff.EnableRemoveResSickness = 1
+
+##########################################################
+#
+#       Profession NPC
+#
+# Enable or Disable Primary Professions
+#         default = 1 (Enabled)
+#                   = 0 (Disabled)
+
+ProfessionNPC.EnableProfessions = 1
+
+# Enable or Disable Secondary Professions
+#         default = 1 (Enabled)
+#                   = 0 (Disabled)
+
+ProfessionNPC.EnableSecondarySkills = 1
+
+# Number of Skill points
+#         default = 10
+
+SkillPoints = 10
+
+# GM Only
+#         default = 0 (Anyone can use)
+#                   = 1 (GM only)
+
+ProfessionNPC.OnlyGMs = 0
+
+# Cost of skill points (in copper)
+#         default = 10000 (10 gold)
+
+SkillGoldCost = 10000
+
+# Use Tokens instead of gold
+#         default = 0 (Use Gold)
+#                 = 1 (Use Tokens)
+
+ProfessionNPC.UseTokens = 1
+
+# Entry number of "token" Item
+#         default = 0 (No item. ProfessionNPC.UseTokens must = 0)
+#                 = n (n = entry number of item)
+
+ProfessionNPC.ItemEntryNum = 99999
+
+##########################################################
+#
+# BOT CONFIGURATION
+#
+#    Bot.FollowDistanceMin
+#    Bot.FollowDistanceMax
+#        Min. and max. follow distance for bots
+#        Default: 0.5 / 2.0
+
+Bot.FollowDistanceMin = 0.5
+Bot.FollowDistanceMax = 2.0
+
+#    Bot.MaxPlayerBots
+#        Maximum number of Player Bots allowed per account
+#        Default: 9
+
+Bot.MaxPlayerBots = 9
+
+#    Bot.PlayerBotsFly
+#        If PlayerBots fly with you when you use the flight master
+#        Default: 0
+#        0 = false
+#        1 = true
+
+Bot.PlayerBotsFly = 1
+
+#    Bot.LootMethod
+#        Type of loot method
+#        Default: 2
+#        0 = Free for all
+#        1 = Round robin
+#        2 = Master loot
+#        3 = Group loot
+#        4 = Need before greed
+
+Bot.LootMethod = 2
+
+#    Bot.SaveOrgLocation
+#        Puts playerbots back to their original location after use
+#        Default: 0
+#        0 = false - keep playerbots where they were camped out
+#        1 = true - puts playerbots back to where they were originally summoned
+
+Bot.SaveOrgLocation = 1
+
+#    Bot.HonorFromPlayerbots
+#        Gain honor if killing a bot
+#        Default = 0
+#        0 = false - Does not give honor when killing a bot
+#        1 = true - Gives honor when bot killed
+
+Bot.HonorFromPlayerbots = 0
+
+################################################################################
+###################################################################################################
+# TriniChat IRC BOT For Trinity Core Configuration File #
+#########################################################
+# irc.active
+# Enable TriniChat Addon
+# Default: 1 - Enable
+# 0 - Disable
+#
+irc.active = 1
+
+##################################################
+# irc.icc
+# IRC connect code
+# Default: 001 - Welcome To Network msg
+# 375 - Beginning Of MOTD
+# 376 - End Of MOTD
+#
+irc.icc = 001
+
+##################################################
+# irc.host
+# IRC server to have TriniChat connect to
+#
+irc.host = "irc.flaminglegion.net"
+
+##################################################
+# irc.port
+# IRC server port to use
+#
+irc.port = "6667"
+
+##################################################
+# irc.user
+# The username to have TriniChat use to connect to the IRC server
+# irc.nick
+# IRC nickname to be used by the bot
+# irc.pass
+# The password to be used to identify to NickServ (IRC NickName Enforcement Services)
+#
+irc.user = "WoWChat_Bot"
+irc.nick = "WoWChat_Bot"
+irc.pass = "dir12345"
+
+##################################################
+# irc.auth
+# IRC Authentication Method
+# Default: 0 - Disable
+# 1 - NickServ - Normal Method - PRIVMSG NickServ :IDENTIFY Password
+# 2 - NickServ - Alternate Method To Identify To A Different Nick - PRIVMSG NickServ :IDENTIFY irc.auth.nick Password
+# 3 - QuakeNet - Normal Method - PRIVMSG Q@CServe.quakenet.org :AUTH irc.nick Password
+# 4 - QuakeNet - Alternate Method To Identify To A Different Nick - PRIVMSG Q@CServe.quakenet.org :AUTH irc.auth.nick Password
+# irc.auth.nick
+# IRC Nickname to use if Auth method 2 or 4 is used
+#
+irc.auth = 0
+irc.auth.nick = "AuthNick"
+
+##################################################
+# irc.ldef
+# Leave a defined IRC channel on server connect
+# Default: 0 - Disable
+# 1 - Enable
+# irc.defchan
+# IRC channel to leave on server connect if irc.ldef is on
+#
+irc.ldef = 0
+irc.defchan = "lobby"
+
+##################################################
+# irc.wct
+# Time to wait before (re)attemptimg connection to IRC server
+# Default: 30000 - (30 Seconds)
+# irc.maxattempt
+# Maximum attempts to try IRC server
+# Default: 20
+#
+irc.wct = 30000
+irc.maxattempt = 20
+
+##################################################
+# irc.auto.announce
+# Time to wait in Minutes to announce random messages from database.
+# Default: 30 - (30 Minutes)
+#
+irc.auto.announce = 30
+
+##################################################
+# irc.autojoin_kick
+# Autojoin IRC channel if kicked
+# Default: 1 - Enable
+# 0 - Disable
+#
+irc.autojoin_kick = 1
+
+##################################################
+# irc.command_prefix
+# IRC command prefix
+# Example: (.)online all
+#
+irc.command_prefix = "\"
+
+##################################################
+# irc.joinmsg
+# irc.rstmsg
+# irc.kickmsg
+# TriniChat bot join/restart/kick messages
+#
+irc.joinmsg = "Trinity Core With TriniChat $Ver Is Up And Running! Command Trigger Is: $Trigger"
+irc.rstmsg = "TriniChat Is Restarting, I Will Be Right Back."
+irc.kickmsg = "Do Not Kick Me Again, Severe Actions Will Be Taken!"
+
+##################################################
+# irc.chan_#
+# wow.chan_#
+# IRC and WOW channels to link. Leave # out of IRC channel. Both channels _ARE_ case sensitive
+# NOTE: you can have more than 1 IRC channel linked to wow channels, as in example:
+# Example: irc.chan_1 = "Trinity"
+# irc.chan_2 = "trinity2"
+# wow.chan_1 = "world"
+# wow.chan_2 = "LookingForGroup"
+# irc.pass_#
+# Passwords for said IRC channels (IRC server side)
+# Example:
+# irc.pass_1 = "password" password for irc channel #1
+# irc.pass_2 = "password2" password for irc channel #2
+irc.chan_1 = "lobby"
+wow.chan_1 = "world"
+irc.chan_2 = "lobby"
+wow.chan_2 = "World"
+irc.pass_1 = "dir12345"
+
+##################################################
+# irc.StatusChannel
+# Channel Number To Display Status Messages In (AuctionHouse, Levels, Deaths, Etc)
+# Default: 1 - Channel ID 1
+# irc.AnnounceChannel
+# Channel Number To Display Announcements In (Announces, Notifies, Event)
+# Default: 1 - Channel ID 1
+#
+irc.StatusChannel = 1
+irc.AnnounceChannel = 1
+
+##################################################
+# irc.op_gm_login
+# Op The GM In All Channels The Bot Is On When They Log In To TriniChat
+# Default: 0 - Disable
+# 1 - Enable
+# irc.op_gm_level
+# The Minimum GM Level Required To Have The Bot Op The User
+# Default: 5 - GM Level 5
+#
+irc.op_gm_login = 0
+irc.op_gm_level = 3
+
+##################################################
+# irc.ajoin (Experimental/Under Development)
+# Force players to autojoin a WOW in game channel
+# Atleast one player must be in the channel on server start, and atleast one person online for invite to work
+# Default: 0 - Disable
+# 1 - Enable
+# irc.ajchan
+# Channel to join if above is Enabled.
+#
+irc.ajoin = 1
+irc.ajchan = "world"
+
+##################################################
+# irc.online.result
+# Maximum number of results per line for the online command
+#
+irc.online.result = 30
+
+##################################################
+# chat.*** (Defineable Strings) (maybe more in future)
+# wow_* - String is displayed in IRC channel
+# irc_* - String is displayed in WOW channel
+# Options: $Name, $Level, $Msg, $GM (not all options work in every string)
+#
+chat.wow_irc = "<WoW>[$Name($Level)] $Msg"
+chat.irc_wow = "<IRC>[$Name]: $Msg"
+chat.join_wow = "12>>04 $GM$Name Joined The $Channel Channel!"
+chat.join_irc = "[$Name]: Has Joined IRC!"
+chat.leave_wow = "12<<04 $GM$Name Left The $Channel Channel!"
+chat.leave_irc = "[$Name]: Has Left IRC!"
+chat.change_nick = "<> $Name Is Now Known As $NewName!"
+
+##################################################
+# Botmask
+# This defines what the bot announces, if its 0 everything is disabled
+# simply add the values of the elements you want to create this mask.
+# Example: WoW join/leaves are 1 and IRC join/leaves are 2, if you want both of these active then the BotMask is 3.
+# (1)Display WoW Chan Join/Leaves In IRC
+# (2)Display IRC Chan Join/Leaves/NickChanges In WoW
+# (4)Display Unknown Command Message When Trigger Is Used And No Command Exists
+# (8)Announce Security Level > 0 As GM At Login
+# (16)Announce GM In GM ON State AS GM At Login
+# (32)Return Errors To Notice. (If disabled then default is Private Message)
+# (64)Display WoW Status Messages (Levels/Deaths)
+# (128)Display Nick Changes From IRC In WOW
+# (256)Display WoW Announces/Notifies In IRC
+# (512)Do Not Let Players Use Commands On Higher GM Level Players
+# (1024)Enable AuctionHouse Announcements !!DISSABLED!!
+#
+Botmask = 928
+
+##################################################
+# irc.gmlog
+# Minimum GM level to not show login/pass info in IRC logs
+# irc.logfile.prefix
+# The prefix of the IRC logfile. Directories can be added here.
+# Example: "IRC/IRC_" outputs IRC_YYYY-MM-DD.log to the IRC subdirectory in your logs dir
+# irc.logchannel
+# Specefies the channel where logged output gets broadcasted.
+# Default: "" (none)
+# irc.logchannelpw
+# The password for the log channel.
+# irc.logmask
+# Bitmask, see Botmask for explanation. Determines what gets logged to the logchannel.
+# (0) Do not broadcast into logchannel.
+# (1) Broadcast IRC Commands into logchannel.
+# (2) Broadcast Ingame GM Commands into logchannel.
+# (3) Broadcast both IRC Commands and GM Commands into logchannel.
+irc.gmlog = 1
+irc.logfile.prefix = "IRC_"
+irc.logchannel = "testlog"
+irc.logchannelpw = ""
+irc.logmask = 3
+
+##################################################
+# irc.fun.games (Experimental/Under Development)
+# Enable TriniChat Games
+# Default: 0 - Disable
+# 1 - Enable
+#
+irc.fun.games = 0
+
+##################################################
+# irc.gm#
+# GM tag to append to (GM onjoin / online command) IRC color codes are acceptable
+#
+irc.gm1 = "[VIP]"
+irc.gm2 = "[Donator]"
+irc.gm3 = "[Bug Tracker]"
+irc.gm4 = "[Moderator]"
+irc.gm5 = "[Game Master]"
+irc.gm6 = "[Admin]"
+irc.gm7 = "[Developer]"
+irc.gm8 = "[Owner]"
+
+###################################################

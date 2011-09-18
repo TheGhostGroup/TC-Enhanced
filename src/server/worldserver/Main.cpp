@@ -30,6 +30,7 @@
 
 #include "Log.h"
 #include "Master.h"
+#include "../../game/TriniChat/IRCClient.h"
 
 #ifndef _TRINITY_CORE_CONFIG
 # define _TRINITY_CORE_CONFIG  "worldserver.conf"

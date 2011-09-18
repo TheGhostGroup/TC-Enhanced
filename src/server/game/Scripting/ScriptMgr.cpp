@@ -27,6 +27,8 @@
 #include "ScriptSystem.h"
 #include "Transport.h"
 #include "Vehicle.h"
+#include "sc_npc_teleport.h"
+#include "CityConquestMgr.h"
 
 // This is the global static registry of scripts.
 template<class TScript>
@@ -247,6 +249,13 @@ void ScriptMgr::Initialize()
     uint32 oldMSTime = getMSTime();
 
     LoadDatabase();
+	// Load TeleNPC2 - maybe not the best place to load it ...
+	sLog->outString("Adding TeleNPC2 Teleport Locations");
+	LoadNpcTele();
+
+	//Load City Conquest.
+    sLog->outString("Initializing City Conquest Engine");
+    CityConquest.LoadCities();
 
     sLog->outString("Loading C++ scripts");
 

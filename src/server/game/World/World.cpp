@@ -77,6 +77,8 @@
 #include "CreatureTextMgr.h"
 #include "SmartAI.h"
 #include "Channel.h"
+#include "AuctionHouseBot.h"
+#include "IRCClient.h"
 
 volatile bool World::m_stopEvent = false;
 uint8 World::m_ExitCode = SHUTDOWN_EXIT_CODE;
@@ -460,9 +462,13 @@ void World::LoadConfigSettings(bool reload)
     rate_values[RATE_DROP_ITEM_REFERENCED] = sConfig->GetFloatDefault("Rate.Drop.Item.Referenced", 1.0f);
     rate_values[RATE_DROP_ITEM_REFERENCED_AMOUNT] = sConfig->GetFloatDefault("Rate.Drop.Item.ReferencedAmount", 1.0f);
     rate_values[RATE_DROP_MONEY]  = sConfig->GetFloatDefault("Rate.Drop.Money", 1.0f);
-    rate_values[RATE_XP_KILL]     = sConfig->GetFloatDefault("Rate.XP.Kill", 1.0f);
-    rate_values[RATE_XP_QUEST]    = sConfig->GetFloatDefault("Rate.XP.Quest", 1.0f);
-    rate_values[RATE_XP_EXPLORE]  = sConfig->GetFloatDefault("Rate.XP.Explore", 1.0f);
+    rate_values[RATE_XP_KILL]            = sConfig->GetFloatDefault("Rate.XP.Kill", 1.0f);
+    rate_values[RATE_XP_KILL_PREMIUM]    = sConfig->GetFloatDefault("Rate.XP.Kill.Premium", 1.0f);
+    rate_values[RATE_XP_QUEST]           = sConfig->GetFloatDefault("Rate.XP.Quest", 1.0f);
+    rate_values[RATE_XP_QUEST_PREMIUM]   = sConfig->GetFloatDefault("Rate.XP.Quest.Premium", 1.0f);
+    rate_values[RATE_XP_EXPLORE]         = sConfig->GetFloatDefault("Rate.XP.Explore", 1.0f);
+    rate_values[RATE_XP_EXPLORE_PREMIUM] = sConfig->GetFloatDefault("Rate.XP.Explore.Premium", 1.0f);
+
     rate_values[RATE_REPAIRCOST]  = sConfig->GetFloatDefault("Rate.RepairCost", 1.0f);
     if (rate_values[RATE_REPAIRCOST] < 0.0f)
     {
@@ -668,6 +674,7 @@ void World::LoadConfigSettings(bool reload)
     m_bool_configs[CONFIG_ALLOW_TWO_SIDE_WHO_LIST]            = sConfig->GetBoolDefault("AllowTwoSide.WhoList", false);
     m_bool_configs[CONFIG_ALLOW_TWO_SIDE_ADD_FRIEND]          = sConfig->GetBoolDefault("AllowTwoSide.AddFriend", false);
     m_bool_configs[CONFIG_ALLOW_TWO_SIDE_TRADE]               = sConfig->GetBoolDefault("AllowTwoSide.trade", false);
+	m_bool_configs[CONFIG_FAKE_WHO_LIST]					  = sConfig->GetBoolDefault("Fake.WHO.List", false);
     m_int_configs[CONFIG_STRICT_PLAYER_NAMES]                 = sConfig->GetIntDefault ("StrictPlayerNames",  0);
     m_int_configs[CONFIG_STRICT_CHARTER_NAMES]                = sConfig->GetIntDefault ("StrictCharterNames", 0);
     m_int_configs[CONFIG_STRICT_PET_NAMES]                    = sConfig->GetIntDefault ("StrictPetNames",     0);
@@ -736,12 +743,6 @@ void World::LoadConfigSettings(bool reload)
     }
     else
         m_int_configs[CONFIG_MAX_PLAYER_LEVEL] = sConfig->GetIntDefault("MaxPlayerLevel", DEFAULT_MAX_LEVEL);
-
-    if (m_int_configs[CONFIG_MAX_PLAYER_LEVEL] > MAX_LEVEL)
-    {
-        sLog->outError("MaxPlayerLevel (%i) must be in range 1..%u. Set to %u.", m_int_configs[CONFIG_MAX_PLAYER_LEVEL], MAX_LEVEL, MAX_LEVEL);
-        m_int_configs[CONFIG_MAX_PLAYER_LEVEL] = MAX_LEVEL;
-    }
 
     m_int_configs[CONFIG_MIN_DUALSPEC_LEVEL] = sConfig->GetIntDefault("MinDualSpecLevel", 40);
 
@@ -1073,6 +1074,8 @@ void World::LoadConfigSettings(bool reload)
     // Warden
     m_bool_configs[CONFIG_BOOL_WARDEN_KICK] = sConfig->GetBoolDefault("Warden.Kick", false);
 
+    m_int_configs[CONFIG_HONOR_FROM_PLAYERBOTS] = sConfig->GetBoolDefault("Bot.HonorFromPlayerbots", false);
+
     //visibility on continents
     m_MaxVisibleDistanceOnContinents = sConfig->GetFloatDefault("Visibility.Distance.Continents", DEFAULT_VISIBILITY_DISTANCE);
     if (m_MaxVisibleDistanceOnContinents < 45*sWorld->getRate(RATE_CREATURE_AGGRO))
@@ -1263,7 +1266,165 @@ void World::LoadConfigSettings(bool reload)
     // Warden
     m_int_configs[CONFIG_INT_WARDEN_BANDAY]         = sConfig->GetIntDefault("Warden.BanDay", 0);
 
-    sScriptMgr->OnConfigLoad(reload);
+    sScriptMgr->OnConfigLoad(reload);  
+
+    // IRC Configurations.
+
+
+    int ConfCnt = 0;
+    sIRC._chan_count = 0;
+    if (sConfig->GetIntDefault("irc.active", 1) == 1)
+        sIRC.Active = true;
+    else
+        sIRC.Active = false;
+
+    sIRC._Host = sConfig->GetStringDefault("irc.host", "irc.freenode.net");
+    if (sIRC._Host.size() > 0)
+        ConfCnt++;
+    sIRC._Mver = "Version 3.0.0";
+    sIRC._Port = sConfig->GetIntDefault("irc.port", 6667);
+    sIRC._User = sConfig->GetStringDefault("irc.user", "TriniChat");
+    sIRC._Pass = sConfig->GetStringDefault("irc.pass", "Services Password");
+    sIRC._Nick = sConfig->GetStringDefault("irc.nick", "TriniChat");
+    sIRC._Auth = sConfig->GetIntDefault("irc.auth", 0);
+    sIRC._Auth_Nick = sConfig->GetStringDefault("irc.auth.nick", "AuthNick");
+    sIRC._ICC = sConfig->GetStringDefault("irc.icc", "001");
+    sIRC._defchan = sConfig->GetStringDefault("irc.defchan", "lobby");
+    sIRC._ldefc = sConfig->GetIntDefault("irc.ldef", 0);
+    sIRC._wct = sConfig->GetIntDefault("irc.wct", 30000);
+    sIRC.ajoin = sConfig->GetIntDefault("irc.ajoin", 1);
+    sIRC.ajchan = sConfig->GetStringDefault("irc.ajchan", "world");
+    sIRC.onlrslt = sConfig->GetIntDefault("irc.online.result", 10);
+    sIRC.BOTMASK = sConfig->GetIntDefault("Botmask", 0);
+    sIRC.logfile = sConfig->GetStringDefault("irc.logfile.prefix", "IRC_");
+    sIRC.logmask = sConfig->GetIntDefault("irc.logmask", 0);
+    sIRC.logchan = sConfig->GetStringDefault("irc.logchannel","");
+    sIRC.logchanpw = sConfig->GetStringDefault("irc.logchannelpassword","");
+    for (int i = 1; i < MAX_CONF_CHANNELS;i++)
+    {
+        std::ostringstream ss;
+        ss << i;
+        std::string ci = "irc.chan_" + ss.str();
+        std::string pw = "irc.pass_" + ss.str();
+        std::string t_chan = sConfig->GetStringDefault(ci.c_str(), "");
+        if (t_chan.size() > 0)
+        {
+            sIRC._chan_count++;
+            sIRC._irc_chan[sIRC._chan_count] = t_chan;
+            sIRC._irc_pass[sIRC._chan_count] = sConfig->GetStringDefault(pw.c_str(), t_chan.c_str());
+            ci = "wow.chan_" + ss.str();
+            sIRC._wow_chan[sIRC._chan_count] = sConfig->GetStringDefault(ci.c_str(), t_chan.c_str());
+        }
+    }
+    sIRC.JoinMsg = sConfig->GetStringDefault("irc.joinmsg", "TriniChat2 $Ver for Trinitycore 3.3.x Maintained by SPGM of Trinitycore http://code.google.com/p/spgm-trinity/");
+    sIRC.RstMsg  = sConfig->GetStringDefault("irc.rstmsg", "TriniChat Is Restarting, I Will Be Right Back!");
+    sIRC.kikmsg = sConfig->GetStringDefault("irc.kickmsg", "Do Not Kick Me Again, Severe Actions Will Be Taken!");
+    // IRC LINES
+    sIRC.ILINES[WOW_IRC] = sConfig->GetStringDefault("chat.wow_irc", "\003<WoW>[\002$Name($Level)\002\003] $Msg");
+    sIRC.ILINES[IRC_WOW] = sConfig->GetStringDefault("chat.irc_wow", "\003<IRC>[$Name]: $Msg");
+    sIRC.ILINES[JOIN_WOW] = sConfig->GetStringDefault("chat.join_wow", "\00312>>\00304 $Name \003Joined The Channel!");
+    sIRC.ILINES[JOIN_IRC] = sConfig->GetStringDefault("chat.join_irc", "\003[$Name]: Has Joined IRC!");
+    sIRC.ILINES[LEAVE_WOW] = sConfig->GetStringDefault("chat.leave_wow", "\00312<<\00304 $Name \003Left The Channel!");
+    sIRC.ILINES[LEAVE_IRC] = sConfig->GetStringDefault("chat.leave_irc", "\003[$Name]: Has Left IRC!");
+    sIRC.ILINES[CHANGE_NICK] = sConfig->GetStringDefault("chat.change_nick", "\003<> $Name Is Now Known As $NewName!");
+    // TriniChat Options
+    sIRC._MCA = sConfig->GetIntDefault("irc.maxattempt", 10);
+    sIRC._autojoinkick = sConfig->GetIntDefault("irc.autojoin_kick", 1);
+    sIRC._cmd_prefx = sConfig->GetStringDefault("irc.command_prefix", ".");
+
+    sIRC._op_gm = sConfig->GetIntDefault("irc.op_gm_login", 0);
+    sIRC._op_gm_lev = sConfig->GetIntDefault("irc.op_gm_level", 3);
+
+    // Misc Options
+    sIRC.games = sConfig->GetIntDefault("irc.fun.games", 0);
+    sIRC.gmlog = sConfig->GetIntDefault("irc.gmlog", 1);
+    sIRC.BOTMASK = sConfig->GetIntDefault("BotMask", 0);
+    sIRC.Status = sConfig->GetIntDefault("irc.StatusChannel", 1);
+    sIRC.anchn = sConfig->GetIntDefault("irc.AnnounceChannel", 1);
+    sIRC.autoanc = sConfig->GetIntDefault("irc.auto.announce", 30);
+    sIRC.ojGM1 = sConfig->GetStringDefault("irc.gm1", "[VIP]");
+    sIRC.ojGM2 = sConfig->GetStringDefault("irc.gm2", "[Donator]");
+    sIRC.ojGM3 = sConfig->GetStringDefault("irc.gm3", "[Bug Tracker]");
+    sIRC.ojGM4 = sConfig->GetStringDefault("irc.gm4", "[Moderator]");
+    sIRC.ojGM5 = sConfig->GetStringDefault("irc.gm5", "[Game Master]");
+    sIRC.ojGM6 = sConfig->GetStringDefault("irc.gm6", "[Admin]");
+    sIRC.ojGM7 = sConfig->GetStringDefault("irc.gm7", "[Developer]");
+    sIRC.ojGM8 = sConfig->GetStringDefault("irc.gm8", "[Owner]");
+    // REQUIRED GM LEVEL
+    QueryResult result = WorldDatabase.PQuery("SELECT `Command`, `gmlevel` FROM `irc_commands` ORDER BY `Command`");
+    if (result)
+    {
+        Field *fields = result->Fetch();
+        for (uint64 i=0; i < result->GetRowCount(); i++)
+        {
+            //TODO: ELSEIF? STRCMP?
+            std::string command = fields[0].GetCString();
+            uint32 gmlvl = fields[1].GetUInt32();
+            if (command == "acct") sIRC.CACCT = gmlvl;
+            if (command == "ban") sIRC.CBAN = gmlvl;
+            if (command == "char") sIRC.CCHAN = gmlvl;
+            if (command == "char") sIRC.CCHAR = gmlvl;
+            if (command == "fun") sIRC.CFUN = gmlvl;
+            if (command == "help") sIRC.CHELP = gmlvl;
+            if (command == "inchan") sIRC.CINCHAN = gmlvl;
+            if (command == "info") sIRC.CINFO = gmlvl;
+            if (command == "item") sIRC.CITEM = gmlvl;
+            if (command == "jail") sIRC.CJAIL = gmlvl;
+            if (command == "kick") sIRC.CKICK = gmlvl;
+            if (command == "kill") sIRC._KILL = gmlvl;
+            if (command == "level") sIRC.CLEVEL = gmlvl;
+            if (command == "lookup") sIRC.CLOOKUP = gmlvl;
+            if (command == "money") sIRC.CMONEY = gmlvl;
+            if (command == "mute") sIRC.CMUTE = gmlvl;
+            if (command == "online") sIRC.CONLINE = gmlvl;
+            if (command == "pm") sIRC.CPM = gmlvl;
+            if (command == "reconnect") sIRC.CRECONNECT = gmlvl;
+            if (command == "reload") sIRC.CRELOAD = gmlvl;
+            if (command == "restart") sIRC.CSHUTDOWN = gmlvl;
+            if (command == "revive") sIRC.CREVIVE = gmlvl;
+            if (command == "saveall") sIRC.CSAVEALL = gmlvl;
+            if (command == "server") sIRC.CSERVERCMD = gmlvl;
+            if (command == "shutdown") sIRC.CSHUTDOWN = gmlvl;
+            if (command == "spell") sIRC.CSPELL = gmlvl;
+            if (command == "sysmsg") sIRC.CSYSMSG = gmlvl;
+            if (command == "tele") sIRC.CTELE = gmlvl;
+            if (command == "top") sIRC.CTOP = gmlvl;
+            if (command == "who") sIRC.CWHO = gmlvl;
+            result->NextRow();
+        }       
+    }
+    else
+    {
+        sIRC.CACCT     = 3;
+        sIRC.CBAN      = 3;
+        sIRC.CCHAN     = 3;
+        sIRC.CCHAR     = 3;
+        sIRC.CFUN      = 3;
+        sIRC.CHELP     = 3;
+        sIRC.CINCHAN   = 3;
+        sIRC.CINFO     = 3;
+        sIRC.CITEM     = 3;
+        sIRC.CJAIL     = 3;
+        sIRC.CKICK     = 3;
+        sIRC._KILL     = 3;
+        sIRC.CLEVEL    = 3;
+        sIRC.CLOOKUP   = 3;
+        sIRC.CMONEY    = 3;
+        sIRC.CMUTE     = 3;
+        sIRC.CONLINE   = 3;
+        sIRC.CPM       = 3;
+        sIRC.CRECONNECT= 3;
+        sIRC.CRELOAD   = 3;
+        sIRC.CREVIVE   = 3;
+        sIRC.CSAVEALL  = 3;
+        sIRC.CSERVERCMD= 3;
+        sIRC.CSHUTDOWN = 3;
+        sIRC.CSPELL    = 3;
+        sIRC.CSYSMSG   = 3;
+        sIRC.CTELE     = 3;
+        sIRC.CTOP      = 3;
+        sIRC.CWHO      = 3;
+    }
 }
 
 /// Initialize the World
@@ -1277,6 +1438,7 @@ void World::SetInitialWorldSettings()
 
     ///- Initialize config settings
     LoadConfigSettings();
+	sLog->outString("Loading TrinityCore configuration settings...");
 
     ///- Initialize Allowed Security Level
     LoadDBAllowedSecurityLevel();
@@ -1726,6 +1888,9 @@ void World::SetInitialWorldSettings()
     LoginDatabase.PExecute("INSERT INTO uptime (realmid, starttime, startstring, uptime, revision) VALUES('%u', " UI64FMTD ", '%s', 0, '%s')",
         realmID, uint64(m_startTime), isoDate, _FULLVERSION);
 
+    static uint32 autoanc = 1;
+    autoanc = sIRC.autoanc;
+
     m_timers[WUPDATE_WEATHERS].SetInterval(1*IN_MILLISECONDS);
     m_timers[WUPDATE_AUCTIONS].SetInterval(MINUTE*IN_MILLISECONDS);
     m_timers[WUPDATE_UPTIME].SetInterval(m_int_configs[CONFIG_UPTIME_UPDATE]*MINUTE*IN_MILLISECONDS);
@@ -1738,6 +1903,8 @@ void World::SetInitialWorldSettings()
     m_timers[WUPDATE_DELETECHARS].SetInterval(DAY*IN_MILLISECONDS); // check for chars to delete every day
 
     m_timers[WUPDATE_PINGDB].SetInterval(getIntConfig(CONFIG_DB_PING_INTERVAL)*MINUTE*IN_MILLISECONDS);    // Mysql ping time in minutes
+
+	m_timers[WUPDATE_AUTOANC].SetInterval(autoanc*MINUTE*1000);
 
     //to set mailtimer to return mails every day between 4 and 5 am
     //mailtimer is increased when updating auctions
@@ -1803,6 +1970,9 @@ void World::SetInitialWorldSettings()
 
     sLog->outString("Calculate random battleground reset time..." );
     InitRandomBGResetTime();
+
+    sLog->outString("Initialize AuctionHouseBot...");
+    auctionbot.Initialize();
 
     // possibly enable db logging; avoid massive startup spam by doing it here.
     if (sLog->GetLogDBLater())
@@ -1974,6 +2144,7 @@ void World::Update(uint32 diff)
     /// <ul><li> Handle auctions when the timer has passed
     if (m_timers[WUPDATE_AUCTIONS].Passed())
     {
+        auctionbot.Update();
         m_timers[WUPDATE_AUCTIONS].Reset();
 
         ///- Update mails (return old mails with item, or delete them)
@@ -2078,6 +2249,12 @@ void World::Update(uint32 diff)
         CharacterDatabase.KeepAlive();
         LoginDatabase.KeepAlive();
         WorldDatabase.KeepAlive();
+    }
+
+    if (m_timers[WUPDATE_AUTOANC].Passed())
+    {
+        m_timers[WUPDATE_AUTOANC].Reset();
+        SendRNDBroadcastIRC();
     }
 
     // update the instance reset times
@@ -2775,6 +2952,20 @@ void World::SendAutoBroadcast()
     }
 
     sLog->outDetail("AutoBroadcast: '%s'", msg.c_str());
+}
+
+void World::SendRNDBroadcastIRC()
+{
+    std::string msg;
+    QueryResult result = WorldDatabase.PQuery("SELECT `message` FROM `irc_autoannounce` ORDER BY RAND() LIMIT 1");
+    if (!result)
+        return;
+    msg = result->Fetch()[0].GetString();
+    
+    sWorld->SendWorldText(6612,msg.c_str());
+    std::string ircchan = "#";
+    ircchan += sIRC._irc_chan[sIRC.anchn].c_str();
+    sIRC.Send_IRC_Channel(ircchan, sIRC.MakeMsg("\00304,08\037/!\\\037\017\00304 Automatic System Message \00304,08\037/!\\\037\017 %s", "%s", msg.c_str()), true);
 }
 
 void World::UpdateRealmCharCount(uint32 accountId)

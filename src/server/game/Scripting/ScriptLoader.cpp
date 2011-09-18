@@ -31,6 +31,30 @@ void AddSC_npc_lottery();
 void AddSC_DuelReset();
 void AddSC_argen_tournament();
 
+//TeleNPC2
+void AddSC_npc_teleport();
+
+//Playerbots
+void AddSC_script_bot_giver();
+
+//City Conquest
+void AddSC_city_conquest_boss();
+void AddSC_city_conquest_generic();
+void AddSC_city_conquest_portal();
+void AddSC_city_conquest_spawner();
+
+// BeastMaster
+void AddSC_Npc_Beastmaster();
+
+// NPC Buff
+void AddSC_Npc_Buff();
+
+//Profession NPC
+void AddSC_professionnpc();
+
+// Level NPC
+void AddSC_levelnpc();
+
 // spells
 void AddSC_deathknight_spell_scripts();
 void AddSC_druid_spell_scripts();
@@ -82,6 +106,7 @@ void AddSC_npc_innkeeper();
 void AddSC_npcs_special();
 void AddSC_npc_taxi();
 void AddSC_achievement_scripts();
+void AddSC_script_bot_giver();
 
 //eastern kingdoms
 void AddSC_alterac_valley();                 //Alterac Valley
@@ -695,6 +720,7 @@ void AddWorldScripts()
     AddSC_npcs_special();
     AddSC_npc_taxi();
     AddSC_achievement_scripts();
+	AddSC_script_bot_giver();
     AddSC_chat_log();
 #endif
 }
@@ -1264,5 +1290,20 @@ void AddCustomScripts()
     AddSC_npc_lottery();
     AddSC_DuelReset();
     AddSC_argen_tournament();
+	//BeastMaster
+	AddSC_Npc_Beastmaster();
+	//Buff NPC
+	AddSC_Npc_Buff();
+	//City Conquest
+	AddSC_city_conquest_boss();
+	AddSC_city_conquest_generic();
+	AddSC_city_conquest_portal();
+	AddSC_city_conquest_spawner();
+	//Profession Npc
+	AddSC_professionnpc();
+    //TeleNPC2
+    AddSC_npc_teleport();
+	//Level NPC
+	AddSC_levelnpc();
 #endif
 }

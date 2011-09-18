@@ -745,7 +745,6 @@ private:
     uint32 _GetRankRights(uint8 rankId) const;
     uint32 _GetRankBankMoneyPerDay(uint8 rankId) const;
     uint32 _GetRankBankTabSlotsPerDay(uint8 rankId, uint8 tabId) const;
-    std::string _GetRankName(uint8 rankId) const;
 
     uint32 _GetMemberRemainingSlots(uint64 guid, uint8 tabId) const;
     uint32 _GetMemberRemainingMoney(uint64 guid) const;
@@ -764,6 +763,7 @@ private:
     void _SendBankMoneyUpdate(WorldSession* session) const;
     void _SendBankContentUpdate(MoveItemData* pSrc, MoveItemData* pDest) const;
     void _SendBankContentUpdate(uint8 tabId, SlotIds slots) const;
+    std::string _GetRankName(uint8 rankId) const;
 
     void _BroadcastEvent(GuildEvents guildEvent, uint64 guid, const char* param1 = NULL, const char* param2 = NULL, const char* param3 = NULL) const;
 };

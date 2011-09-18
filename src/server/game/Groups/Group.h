@@ -44,6 +44,21 @@ struct MapEntry;
 #define MAX_RAID_SUBGROUPS MAXRAIDSIZE/MAXGROUPSIZE
 #define TARGETICONCOUNT 8
 
+class PlayerbotAI;
+class PlayerbotClassAI;
+
+enum TARGETICON
+{
+    STAR            = 0,
+    CIRCLE          = 1,
+    DIAMOND         = 2,
+    TRIANGLE        = 3,
+    MOON            = 4,
+    SQUARE          = 5,
+    CROSS           = 6,
+    SKULL           = 7
+};
+
 enum RollVote
 {
     PASS              = 0,
@@ -245,6 +260,10 @@ class Group
         void ChangeMembersGroup(uint64 guid, uint8 group);
         void ChangeMembersGroup(Player* player, uint8 group);
         void SetTargetIcon(uint8 id, uint64 whoGuid, uint64 targetGuid);
+        // Bot change
+        uint64 GetTargetWithIconByGroup(uint64 guid);
+        void SetTargetIcon(uint8 id, uint64 guid);
+
         void SetGroupMemberFlag(uint64 guid, bool apply, GroupMemberFlags flag);
         void RemoveUniqueGroupMemberFlag(GroupMemberFlags flag);
 

@@ -64,6 +64,496 @@
 #include "Group.h"
 #include "ChannelMgr.h"
 
+#include "AuctionHouseBot.h"
+
+bool ChatHandler::HandleAHBotOptionsCommand(const char *args)
+{
+    uint32 ahMapID = 0;
+    char * opt = strtok((char*)args, " ");
+    char * ahMapIdStr = strtok(NULL, " ");
+    if (ahMapIdStr)
+    {
+        ahMapID = (uint32) strtoul(ahMapIdStr, NULL, 0);
+        switch (ahMapID)
+        {
+        case 2:
+        case 6:
+        case 7:
+            break;
+        default:
+            opt = NULL;
+            break;
+        }
+    }
+    if (!opt)
+    {
+        PSendSysMessage("Syntax is: ahbotoptions $option $ahMapID (2, 6 or 7) $parameter");
+        PSendSysMessage("Try ahbotoptions help to see a list of options.");
+        return false;
+    }
+    int l = strlen(opt);
+
+    if (strncmp(opt,"help",l) == 0)
+    {
+        PSendSysMessage("AHBot commands:");
+        PSendSysMessage("ahexpire");
+        PSendSysMessage("minitems");
+        PSendSysMessage("maxitems");
+        //PSendSysMessage("");
+        //PSendSysMessage("");
+        PSendSysMessage("percentages");
+        PSendSysMessage("minprice");
+        PSendSysMessage("maxprice");
+        PSendSysMessage("minbidprice");
+        PSendSysMessage("maxbidprice");
+        PSendSysMessage("maxstack");
+        PSendSysMessage("buyerprice");
+        PSendSysMessage("bidinterval");
+        PSendSysMessage("bidsperinterval");
+        return true;
+    }
+    else if (strncmp(opt,"ahexpire",l) == 0)
+    {
+        if (!ahMapIdStr)
+        {
+            PSendSysMessage("Syntax is: ahbotoptions ahexpire $ahMapID (2, 6 or 7)");
+            return false;
+        }
+        auctionbot.Commands(0, ahMapID, NULL, NULL);
+    }
+    else if (strncmp(opt,"minitems",l) == 0)
+    {
+        char * param1 = strtok(NULL, " ");
+        if ((!ahMapIdStr) || (!param1))
+        {
+            PSendSysMessage("Syntax is: ahbotoptions minitems $ahMapID (2, 6 or 7) $minItems");
+            return false;
+        }
+        auctionbot.Commands(1, ahMapID, NULL, param1);
+    }
+    else if (strncmp(opt,"maxitems",l) == 0)
+    {
+        char * param1 = strtok(NULL, " ");
+        if ((!ahMapIdStr) || (!param1))
+        {
+            PSendSysMessage("Syntax is: ahbotoptions maxitems $ahMapID (2, 6 or 7) $maxItems");
+            return false;
+        }
+        auctionbot.Commands(2, ahMapID, NULL, param1);
+    }
+    else if (strncmp(opt,"mintime",l) == 0)
+    {
+        PSendSysMessage("ahbotoptions mintime has been deprecated");
+        return false;
+        /*
+        char * param1 = strtok(NULL, " ");
+        if ((!ahMapIdStr) || (!param1))
+        {
+            PSendSysMessage("Syntax is: ahbotoptions mintime $ahMapID (2, 6 or 7) $mintime");
+            return false;
+        }
+        auctionbot.Commands(3, ahMapID, NULL, param1);
+        */
+    }
+    else if (strncmp(opt,"maxtime",l) == 0)
+    {
+        PSendSysMessage("ahbotoptions maxtime has been deprecated");
+        return false;
+        /*
+        char * param1 = strtok(NULL, " ");
+        if ((!ahMapIdStr) || (!param1))
+        {
+            PSendSysMessage("Syntax is: ahbotoptions maxtime $ahMapID (2, 6 or 7) $maxtime");
+            return false;
+        }
+        auctionbot.Commands(4, ahMapID, NULL, param1);
+        */
+    }
+    else if (strncmp(opt,"percentages",l) == 0)
+    {
+        char * param1 = strtok(NULL, " ");
+        char * param2 = strtok(NULL, " ");
+        char * param3 = strtok(NULL, " ");
+        char * param4 = strtok(NULL, " ");
+        char * param5 = strtok(NULL, " ");
+        char * param6 = strtok(NULL, " ");
+        char * param7 = strtok(NULL, " ");
+        char * param8 = strtok(NULL, " ");
+        char * param9 = strtok(NULL, " ");
+        char * param10 = strtok(NULL, " ");
+        char * param11 = strtok(NULL, " ");
+        char * param12 = strtok(NULL, " ");
+        char * param13 = strtok(NULL, " ");
+        char * param14 = strtok(NULL, " ");
+        if ((!ahMapIdStr) || (!param14))
+        {
+            PSendSysMessage("Syntax is: ahbotoptions percentages $ahMapID (2, 6 or 7) $1 $2 $3 $4 $5 $6 $7 $8 $9 $10 $11 $12 $13 $14");
+            PSendSysMessage("1 GreyTradeGoods 2 WhiteTradeGoods 3 GreenTradeGoods 4 BlueTradeGoods 5 PurpleTradeGoods");
+            PSendSysMessage("6 OrangeTradeGoods 7 YellowTradeGoods 8 GreyItems 9 WhiteItems 10 GreenItems 11 BlueItems");
+            PSendSysMessage("12 PurpleItems 13 OrangeItems 14 YellowItems");
+            PSendSysMessage("The total must add up to 100%");
+            return false;
+        }
+        uint32 greytg = (uint32) strtoul(param1, NULL, 0);
+        uint32 whitetg = (uint32) strtoul(param2, NULL, 0);
+        uint32 greentg = (uint32) strtoul(param3, NULL, 0);
+        uint32 bluetg = (uint32) strtoul(param3, NULL, 0);
+        uint32 purpletg = (uint32) strtoul(param5, NULL, 0);
+        uint32 orangetg = (uint32) strtoul(param6, NULL, 0);
+        uint32 yellowtg = (uint32) strtoul(param7, NULL, 0);
+        uint32 greyi = (uint32) strtoul(param8, NULL, 0);
+        uint32 whitei = (uint32) strtoul(param9, NULL, 0);
+        uint32 greeni = (uint32) strtoul(param10, NULL, 0);
+        uint32 bluei = (uint32) strtoul(param11, NULL, 0);
+        uint32 purplei = (uint32) strtoul(param12, NULL, 0);
+        uint32 orangei = (uint32) strtoul(param13, NULL, 0);
+        uint32 yellowi = (uint32) strtoul(param14, NULL, 0);
+        uint32 totalPercent = greytg + whitetg + greentg + bluetg + purpletg + orangetg + yellowtg + greyi + whitei + greeni + bluei + purplei + orangei + yellowi;
+        if ((totalPercent == 0) || (totalPercent != 100))
+        {
+            PSendSysMessage("Syntax is: ahbotoptions percentages $ahMapID (2, 6 or 7) $1 $2 $3 $4 $5 $6 $7 $8 $9 $10 $11 $12 $13 $14");
+            PSendSysMessage("1 GreyTradeGoods 2 WhiteTradeGoods 3 GreenTradeGoods 4 BlueTradeGoods 5 PurpleTradeGoods");
+            PSendSysMessage("6 OrangeTradeGoods 7 YellowTradeGoods 8 GreyItems 9 WhiteItems 10 GreenItems 11 BlueItems");
+            PSendSysMessage("12 PurpleItems 13 OrangeItems 14 YellowItems");
+            PSendSysMessage("The total must add up to 100%");
+            return false;
+        }
+        char param[100];
+        param[0] = '\0';
+        strcat(param, param1);
+        strcat(param, " ");
+        strcat(param, param2);
+        strcat(param, " ");
+        strcat(param, param3);
+        strcat(param, " ");
+        strcat(param, param4);
+        strcat(param, " ");
+        strcat(param, param5);
+        strcat(param, " ");
+        strcat(param, param6);
+        strcat(param, " ");
+        strcat(param, param7);
+        strcat(param, " ");
+        strcat(param, param8);
+        strcat(param, " ");
+        strcat(param, param9);
+        strcat(param, " ");
+        strcat(param, param10);
+        strcat(param, " ");
+        strcat(param, param11);
+        strcat(param, " ");
+        strcat(param, param12);
+        strcat(param, " ");
+        strcat(param, param13);
+        strcat(param, " ");
+        strcat(param, param14);
+        auctionbot.Commands(5, ahMapID, NULL, param);
+    }
+    else if (strncmp(opt,"minprice",l) == 0)
+    {
+        char * param1 = strtok(NULL, " ");
+        char * param2 = strtok(NULL, " ");
+        if ((!ahMapIdStr) || (!param1) || (!param2))
+        {
+            PSendSysMessage("Syntax is: ahbotoptions minprice $ahMapID (2, 6 or 7) $color (grey, white, green, blue, purple, orange or yellow) $price");
+            return false;
+        }
+        if (strncmp(param1,"grey",l) == 0)
+        {
+            auctionbot.Commands(6, ahMapID, AHB_GREY, param2);
+        }
+        else if (strncmp(param1,"white",l) == 0)
+        {
+            auctionbot.Commands(6, ahMapID, AHB_WHITE, param2);
+        }
+        else if (strncmp(param1,"green",l) == 0)
+        {
+            auctionbot.Commands(6, ahMapID, AHB_GREEN, param2);
+        }
+        else if (strncmp(param1,"blue",l) == 0)
+        {
+            auctionbot.Commands(6, ahMapID, AHB_BLUE, param2);
+        }
+        else if (strncmp(param1,"purple",l) == 0)
+        {
+            auctionbot.Commands(6, ahMapID, AHB_PURPLE, param2);
+        }
+        else if (strncmp(param1,"orange",l) == 0)
+        {
+            auctionbot.Commands(6, ahMapID, AHB_ORANGE, param2);
+        }
+        else if (strncmp(param1,"yellow",l) == 0)
+        {
+            auctionbot.Commands(6, ahMapID, AHB_YELLOW, param2);
+        }
+        else
+        {
+            PSendSysMessage("Syntax is: ahbotoptions minprice $ahMapID (2, 6 or 7) $color (grey, white, green, blue, purple, orange or yellow) $price");
+            return false;
+        }
+    }
+    else if (strncmp(opt,"maxprice",l) == 0)
+    {
+        char * param1 = strtok(NULL, " ");
+        char * param2 = strtok(NULL, " ");
+        if ((!ahMapIdStr) || (!param1) || (!param2))
+        {
+            PSendSysMessage("Syntax is: ahbotoptions maxprice $ahMapID (2, 6 or 7) $color (grey, white, green, blue, purple, orange or yellow) $price");
+            return false;
+        }
+        if (strncmp(param1,"grey",l) == 0)
+        {
+            auctionbot.Commands(7, ahMapID, AHB_GREY, param2);
+        }
+        else if (strncmp(param1,"white",l) == 0)
+        {
+            auctionbot.Commands(7, ahMapID, AHB_WHITE, param2);
+        }
+        else if (strncmp(param1,"green",l) == 0)
+        {
+            auctionbot.Commands(7, ahMapID, AHB_GREEN, param2);
+        }
+        else if (strncmp(param1,"blue",l) == 0)
+        {
+            auctionbot.Commands(7, ahMapID, AHB_BLUE, param2);
+        }
+        else if (strncmp(param1,"purple",l) == 0)
+        {
+            auctionbot.Commands(7, ahMapID, AHB_PURPLE, param2);
+        }
+        else if (strncmp(param1,"orange",l) == 0)
+        {
+            auctionbot.Commands(7, ahMapID, AHB_ORANGE, param2);
+        }
+        else if (strncmp(param1,"yellow",l) == 0)
+        {
+            auctionbot.Commands(7, ahMapID, AHB_YELLOW, param2);
+        }
+        else
+        {
+            PSendSysMessage("Syntax is: ahbotoptions maxprice $ahMapID (2, 6 or 7) $color (grey, white, green, blue, purple, orange or yellow) $price");
+            return false;
+        }
+    }
+    else if (strncmp(opt,"minbidprice",l) == 0)
+    {
+        char * param1 = strtok(NULL, " ");
+        char * param2 = strtok(NULL, " ");
+        if ((!ahMapIdStr) || (!param1) || (!param2))
+        {
+            PSendSysMessage("Syntax is: ahbotoptions minbidprice $ahMapID (2, 6 or 7) $color (grey, white, green, blue, purple, orange or yellow) $price");
+            return false;
+        }
+        uint32 minBidPrice = (uint32) strtoul(param2, NULL, 0);
+        if ((minBidPrice < 1) || (minBidPrice > 100))
+        {
+            PSendSysMessage("The min bid price multiplier must be between 1 and 100");
+            return false;
+        }
+        if (strncmp(param1,"grey",l) == 0)
+        {
+            auctionbot.Commands(8, ahMapID, AHB_GREY, param2);
+        }
+        else if (strncmp(param1,"white",l) == 0)
+        {
+            auctionbot.Commands(8, ahMapID, AHB_WHITE, param2);
+        }
+        else if (strncmp(param1,"green",l) == 0)
+        {
+            auctionbot.Commands(8, ahMapID, AHB_GREEN, param2);
+        }
+        else if (strncmp(param1,"blue",l) == 0)
+        {
+            auctionbot.Commands(8, ahMapID, AHB_BLUE, param2);
+        }
+        else if (strncmp(param1,"purple",l) == 0)
+        {
+            auctionbot.Commands(8, ahMapID, AHB_PURPLE, param2);
+        }
+        else if (strncmp(param1,"orange",l) == 0)
+        {
+            auctionbot.Commands(8, ahMapID, AHB_ORANGE, param2);
+        }
+        else if (strncmp(param1,"yellow",l) == 0)
+        {
+            auctionbot.Commands(8, ahMapID, AHB_YELLOW, param2);
+        }
+        else
+        {
+            PSendSysMessage("Syntax is: ahbotoptions minbidprice $ahMapID (2, 6 or 7) $color (grey, white, green, blue, purple, orange or yellow) $price");
+            return false;
+        }
+    }
+    else if (strncmp(opt,"maxbidprice",l) == 0)
+    {
+        char * param1 = strtok(NULL, " ");
+        char * param2 = strtok(NULL, " ");
+        if ((!ahMapIdStr) || (!param1) || (!param2))
+        {
+            PSendSysMessage("Syntax is: ahbotoptions maxbidprice $ahMapID (2, 6 or 7) $color (grey, white, green, blue, purple, orange or yellow) $price");
+            return false;
+        }
+        uint32 maxBidPrice = (uint32) strtoul(param2, NULL, 0);
+        if ((maxBidPrice < 1) || (maxBidPrice > 100))
+        {
+            PSendSysMessage("The max bid price multiplier must be between 1 and 100");
+            return false;
+        }
+        if (strncmp(param1,"grey",l) == 0)
+        {
+            auctionbot.Commands(9, ahMapID, AHB_GREY, param2);
+        }
+        else if (strncmp(param1,"white",l) == 0)
+        {
+            auctionbot.Commands(9, ahMapID, AHB_WHITE, param2);
+        }
+        else if (strncmp(param1,"green",l) == 0)
+        {
+            auctionbot.Commands(9, ahMapID, AHB_GREEN, param2);
+        }
+        else if (strncmp(param1,"blue",l) == 0)
+        {
+            auctionbot.Commands(9, ahMapID, AHB_BLUE, param2);
+        }
+        else if (strncmp(param1,"purple",l) == 0)
+        {
+            auctionbot.Commands(9, ahMapID, AHB_PURPLE, param2);
+        }
+        else if (strncmp(param1,"orange",l) == 0)
+        {
+            auctionbot.Commands(9, ahMapID, AHB_ORANGE, param2);
+        }
+        else if (strncmp(param1,"yellow",l) == 0)
+        {
+            auctionbot.Commands(9, ahMapID, AHB_YELLOW, param2);
+        }
+        else
+        {
+            PSendSysMessage("Syntax is: ahbotoptions max bidprice $ahMapID (2, 6 or 7) $color (grey, white, green, blue, purple, orange or yellow) $price");
+            return false;
+        }
+    }
+    else if (strncmp(opt,"maxstack",l) == 0)
+    {
+        char * param1 = strtok(NULL, " ");
+        char * param2 = strtok(NULL, " ");
+        if ((!ahMapIdStr) || (!param1) || (!param2))
+        {
+            PSendSysMessage("Syntax is: ahbotoptions maxstack $ahMapID (2, 6 or 7) $color (grey, white, green, blue, purple, orange or yellow) $value");
+            return false;
+        }
+        uint32 maxStack = (uint32) strtoul(param2, NULL, 0);
+        if (maxStack < 0)
+        {
+            PSendSysMessage("maxstack can't be a negative number.");
+            return false;
+        }
+        if (strncmp(param1,"grey",l) == 0)
+        {
+            auctionbot.Commands(10, ahMapID, AHB_GREY, param2);
+        }
+        else if (strncmp(param1,"white",l) == 0)
+        {
+            auctionbot.Commands(10, ahMapID, AHB_WHITE, param2);
+        }
+        else if (strncmp(param1,"green",l) == 0)
+        {
+            auctionbot.Commands(10, ahMapID, AHB_GREEN, param2);
+        }
+        else if (strncmp(param1,"blue",l) == 0)
+        {
+            auctionbot.Commands(10, ahMapID, AHB_BLUE, param2);
+        }
+        else if (strncmp(param1,"purple",l) == 0)
+        {
+            auctionbot.Commands(10, ahMapID, AHB_PURPLE, param2);
+        }
+        else if (strncmp(param1,"orange",l) == 0)
+        {
+            auctionbot.Commands(10, ahMapID, AHB_ORANGE, param2);
+        }
+        else if (strncmp(param1,"yellow",l) == 0)
+        {
+            auctionbot.Commands(10, ahMapID, AHB_YELLOW, param2);
+        }
+        else
+        {
+            PSendSysMessage("Syntax is: ahbotoptions maxstack $ahMapID (2, 6 or 7) $color (grey, white, green, blue, purple, orange or yellow) $value");
+            return false;
+        }
+    }
+    else if (strncmp(opt,"buyerprice",l) == 0)
+    {
+        char * param1 = strtok(NULL, " ");
+        char * param2 = strtok(NULL, " ");
+        if ((!ahMapIdStr) || (!param1) || (!param2))
+        {
+            PSendSysMessage("Syntax is: ahbotoptions buyerprice $ahMapID (2, 6 or 7) $color (grey, white, green, blue or purple) $price");
+            return false;
+        }
+        if (strncmp(param1,"grey",l) == 0)
+        {
+            auctionbot.Commands(11, ahMapID, AHB_GREY, param2);
+        }
+        else if (strncmp(param1,"white",l) == 0)
+        {
+            auctionbot.Commands(11, ahMapID, AHB_WHITE, param2);
+        }
+        else if (strncmp(param1,"green",l) == 0)
+        {
+            auctionbot.Commands(11, ahMapID, AHB_GREEN, param2);
+        }
+        else if (strncmp(param1,"blue",l) == 0)
+        {
+            auctionbot.Commands(11, ahMapID, AHB_BLUE, param2);
+        }
+        else if (strncmp(param1,"purple",l) == 0)
+        {
+            auctionbot.Commands(11, ahMapID, AHB_PURPLE, param2);
+        }
+        else if (strncmp(param1,"orange",l) == 0)
+        {
+            auctionbot.Commands(11, ahMapID, AHB_ORANGE, param2);
+        }
+        else if (strncmp(param1,"yellow",l) == 0)
+        {
+            auctionbot.Commands(11, ahMapID, AHB_YELLOW, param2);
+        }
+        else
+        {
+            PSendSysMessage("Syntax is: ahbotoptions buyerprice $ahMapID (2, 6 or 7) $color (grey, white, green, blue or purple) $price");
+            return false;
+        }
+    }
+    else if (strncmp(opt,"bidinterval",l) == 0)
+    {
+        char * param1 = strtok(NULL, " ");
+        if ((!ahMapIdStr) || (!param1))
+        {
+            PSendSysMessage("Syntax is: ahbotoptions bidinterval $ahMapID (2, 6 or 7) $interval(in minutes)");
+            return false;
+        }
+        auctionbot.Commands(12, ahMapID, NULL, param1);
+    }
+    else if (strncmp(opt,"bidsperinterval",l) == 0)
+    {
+        char * param1 = strtok(NULL, " ");
+        if ((!ahMapIdStr) || (!param1))
+        {
+            PSendSysMessage("Syntax is: ahbotoptions bidsperinterval $ahMapID (2, 6 or 7) $bids");
+            return false;
+        }
+        auctionbot.Commands(13, ahMapID, NULL, param1);
+    }
+    else
+    {
+        PSendSysMessage("Syntax is: ahbotoptions $option $ahMapID (2, 6 or 7) $parameter");
+        PSendSysMessage("Try ahbotoptions help to see a list of options.");
+        return false;
+    }
+    return true;
+}
+
 bool ChatHandler::HandleMaxSkillCommand(const char* /*args*/)
 {
     Player* SelectedPlayer = getSelectedPlayer();
@@ -263,8 +753,8 @@ bool ChatHandler::HandleAddItemCommand(const char *args)
 
     sLog->outDetail(GetTrinityString(LANG_ADDITEM), itemId, count);
 
-    ItemTemplate const* pProto = sObjectMgr->GetItemTemplate(itemId);
-    if (!pProto)
+    ItemTemplate const *pTemplate = sObjectMgr->GetItemTemplate(itemId);
+    if (!pTemplate)
     {
         PSendSysMessage(LANG_COMMAND_ITEMIDINVALID, itemId);
         SetSentErrorMessage(true);
@@ -2911,6 +3401,207 @@ bool ChatHandler::HandleBanAccountByIdCommand(const char *args)
             return false;
     }
 
+    return true;
+}
+
+bool ChatHandler::HandleQuestAdd(const char *args)
+{
+    Player* player = getSelectedPlayer();
+    if (!player)
+    {
+        SendSysMessage(LANG_NO_CHAR_SELECTED);
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    // .addquest #entry'
+    // number or [name] Shift-click form |color|Hquest:quest_id:quest_level|h[name]|h|r
+    char* cId = extractKeyFromLink((char*)args,"Hquest");
+    if (!cId)
+        return false;
+
+    uint32 entry = atol(cId);
+
+    Quest const* pQuest = sObjectMgr->GetQuestTemplate(entry);
+
+    if (!pQuest)
+    {
+        PSendSysMessage(LANG_COMMAND_QUEST_NOTFOUND,entry);
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    // check item starting quest (it can work incorrectly if added without item in inventory)
+    ItemTemplateContainer const* its = sObjectMgr->GetItemTemplateStore();
+    for (ItemTemplateContainer::const_iterator itr = its->begin(); itr != its->end(); ++itr)
+    {
+        if (itr->second.StartQuest == entry)
+        {
+            PSendSysMessage(LANG_COMMAND_QUEST_STARTFROMITEM, entry, itr->second.ItemId);
+            SetSentErrorMessage(true);
+            return false;
+        }
+    }
+
+    // ok, normal (creature/GO starting) quest
+    if (player->CanAddQuest(pQuest, true))
+    {
+        player->AddQuest(pQuest, NULL);
+
+        if (player->CanCompleteQuest(entry))
+            player->CompleteQuest(entry);
+    }
+
+    return true;
+}
+
+bool ChatHandler::HandleQuestRemove(const char *args)
+{
+    Player* player = getSelectedPlayer();
+    if (!player)
+    {
+        SendSysMessage(LANG_NO_CHAR_SELECTED);
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    // .removequest #entry'
+    // number or [name] Shift-click form |color|Hquest:quest_id:quest_level|h[name]|h|r
+    char* cId = extractKeyFromLink((char*)args,"Hquest");
+    if (!cId)
+        return false;
+
+    uint32 entry = atol(cId);
+
+    Quest const* pQuest = sObjectMgr->GetQuestTemplate(entry);
+
+    if (!pQuest)
+    {
+        PSendSysMessage(LANG_COMMAND_QUEST_NOTFOUND, entry);
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    // remove all quest entries for 'entry' from quest log
+    for (uint8 slot = 0; slot < MAX_QUEST_LOG_SIZE; ++slot)
+    {
+        uint32 quest = player->GetQuestSlotQuestId(slot);
+        if (quest == entry)
+        {
+            player->SetQuestSlot(slot,0);
+
+            // we ignore unequippable quest items in this case, its' still be equipped
+            player->TakeQuestSourceItem(quest, false);
+        }
+    }
+
+    // set quest status to not started (will updated in DB at next save)
+    player->SetQuestStatus(entry, QUEST_STATUS_NONE);
+
+    // reset rewarded for restart repeatable quest
+   // player->getQuestStatusMap()[entry].m_rewarded = false;
+
+    SendSysMessage(LANG_COMMAND_QUEST_REMOVED);
+    return true;
+}
+
+bool ChatHandler::HandleQuestComplete(const char *args)
+{
+    Player* player = getSelectedPlayer();
+    if (!player)
+    {
+        SendSysMessage(LANG_NO_CHAR_SELECTED);
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    // .quest complete #entry
+    // number or [name] Shift-click form |color|Hquest:quest_id:quest_level|h[name]|h|r
+    char* cId = extractKeyFromLink((char*)args,"Hquest");
+    if (!cId)
+        return false;
+
+    uint32 entry = atol(cId);
+
+    Quest const* pQuest = sObjectMgr->GetQuestTemplate(entry);
+
+    // If player doesn't have the quest
+    if (!pQuest || player->GetQuestStatus(entry) == QUEST_STATUS_NONE)
+    {
+        PSendSysMessage(LANG_COMMAND_QUEST_NOTFOUND, entry);
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    // Add quest items for quests that require items
+    for (uint8 x = 0; x < QUEST_ITEM_OBJECTIVES_COUNT; ++x)
+    {
+        uint32 id = pQuest->ReqItemId[x];
+        uint32 count = pQuest->ReqItemCount[x];
+        if (!id || !count)
+            continue;
+
+        uint32 curItemCount = player->GetItemCount(id,true);
+
+        ItemPosCountVec dest;
+        uint8 msg = player->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, id, count-curItemCount);
+        if (msg == EQUIP_ERR_OK)
+        {
+            Item* item = player->StoreNewItem(dest, id, true);
+            player->SendNewItem(item,count-curItemCount,true,false);
+        }
+    }
+
+    // All creature/GO slain/casted (not required, but otherwise it will display "Creature slain 0/10")
+    for (uint8 i = 0; i < QUEST_OBJECTIVES_COUNT; ++i)
+    {
+        uint32 creature = pQuest->ReqCreatureOrGOId[i];
+        uint32 creaturecount = pQuest->ReqCreatureOrGOCount[i];
+
+        if (uint32 spell_id = pQuest->ReqSpell[i])
+        {
+            for (uint16 z = 0; z < creaturecount; ++z)
+                player->CastedCreatureOrGO(creature,0,spell_id);
+        }
+        else if (creature > 0)
+        {
+            if (CreatureTemplate const* creatureInfo = sObjectMgr->GetCreatureTemplate(creature))
+                for (uint16 z = 0; z < creaturecount; ++z)
+                    player->KilledMonster(creatureInfo,0);
+        }
+        else if (creature < 0)
+        {
+            for (uint16 z = 0; z < creaturecount; ++z)
+                player->CastedCreatureOrGO(creature,0,0);
+        }
+    }
+
+    // If the quest requires reputation to complete
+    if (uint32 repFaction = pQuest->GetRepObjectiveFaction())
+    {
+        uint32 repValue = pQuest->GetRepObjectiveValue();
+        uint32 curRep = player->GetReputationMgr().GetReputation(repFaction);
+        if (curRep < repValue)
+            if (FactionEntry const *factionEntry = sFactionStore.LookupEntry(repFaction))
+                player->GetReputationMgr().SetReputation(factionEntry,repValue);
+    }
+
+    // If the quest requires a SECOND reputation to complete
+    if (uint32 repFaction = pQuest->GetRepObjectiveFaction2())
+    {
+        uint32 repValue2 = pQuest->GetRepObjectiveValue2();
+        uint32 curRep = player->GetReputationMgr().GetReputation(repFaction);
+        if (curRep < repValue2)
+            if (FactionEntry const *factionEntry = sFactionStore.LookupEntry(repFaction))
+                player->GetReputationMgr().SetReputation(factionEntry,repValue2);
+    }
+
+    // If the quest requires money
+    int32 ReqOrRewMoney = pQuest->GetRewOrReqMoney();
+    if (ReqOrRewMoney < 0)
+        player->ModifyMoney(-ReqOrRewMoney);
+
+    player->CompleteQuest(entry);
     return true;
 }
 
