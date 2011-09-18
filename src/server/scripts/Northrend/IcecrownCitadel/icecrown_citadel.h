@@ -115,7 +115,12 @@ enum DataTypes
     GUID_EDGE_DESTROY_WARNING       = 48,
     DATA_BEEN_WAITING_ACHIEVEMENT   = 49,
     DATA_NECK_DEEP_ACHIEVEMENT      = 50,
-
+    // Gunship Battle
+    DATA_FIRST_SQUAD_STATE          = 51,
+    DATA_SECOND_SQUAD_STATE         = 52,
+    DATA_SPIRE_FROSTWYRM_STATE      = 53,
+    DATA_GB_HIGH_OVERLORD_SAURFANG  = 54,
+    DATA_GB_MURADIN_BRONZEBEARD     = 55,
 };
 
 enum CreaturesIds
@@ -169,6 +174,39 @@ enum CreaturesIds
     NPC_REANIMATED_ADHERENT                     = 38010,
     NPC_VENGEFUL_SHADE                          = 38222,
 
+    // Ramparts of Skulls
+    NPC_KORKRON_PRIMALIST                       = 37030,
+    NPC_SKYBREAKER_HIEROPHANT                   = 37027,
+    NPC_KORKRON_DEFENDER                        = 37032,
+    NPC_SKYBREAKER_PROTECTOR                    = 36998,
+    NPC_KORKRON_NECROLYTE                       = 37149,
+    NPC_SKYBREAKER_SUMMONER                     = 37148,
+    NPC_KORKRON_ORACLE                          = 37031,
+    NPC_SKYBREAKER_LIGHT                        = 37016,
+    NPC_KORKRON_REAVER                          = 37029,
+    NPC_SKYBREAKER_DREADBLADE                   = 37004,
+    NPC_KORKRON_SNIPER                          = 37146,
+    NPC_SKYBREAKER_MARKSMAN                     = 37144,
+    NPC_KORKRON_TEMPLAR                         = 37034,
+    NPC_SKYBREAKER_VICAR                        = 37021,
+    NPC_KORKRON_VANQUISHER                      = 37035,
+    NPC_SKYBREAKER_VINDICATOR                   = 37003,
+    NPC_KORKRON_INVOKER                         = 37033,
+    NPC_SKYBREAKER_SORCERER                     = 37026,
+    NPC_SPIRE_FROSTWYRM                         = 37230,
+
+    // Gunship Battle
+    NPC_GB_SKYBREAKER                           = 37540,    // GB means Gunship Battle
+    NPC_GB_ORGRIMS_HAMMER                       = 37215,
+    NPC_GB_HIGH_OVERLORD_SAURFANG               = 36939,
+    NPC_GB_MURADIN_BRONZEBEARD                  = 36948,
+    NPC_GB_KORKRON_REAVER                       = 37920,
+    NPC_GB_SKYBREAKER_MARINE                    = 36950,
+    NPC_GB_KORKRON_ROCKETEER                    = 36982,
+    NPC_GB_SKYBREAKER_MORTAR_SOLDIER            = 36978,
+    NPC_GB_KORKRON_AXETHROWER                   = 36968,
+    NPC_GB_SKYBREAKER_RIFLEMAN                  = 36969,
+	
     // Deathbringer Saurfang
     NPC_DEATHBRINGER_SAURFANG                   = 37813,
     NPC_BLOOD_BEAST                             = 38508,
@@ -293,6 +331,15 @@ enum GameObjectsIds
     GO_ICEWALL                              = 201911,
     GO_LORD_MARROWGAR_S_ENTRANCE            = 201857,
 
+    // Gunship Battle Transports (here for reference)
+    // All of them except the first one are guesses, based on their displayId.
+    GO_SKYBREAKER_FRIENDLY                  = 201811, // Skybreaker if team in instance is ALLIANCE
+    GO_SKYBREAKER_UNFRIENDLY                = 201580, // Skybreaker if team in instance is HORDE
+    GO_ORGRIMS_HAMMER_FRIENDLY              = 201812, // Orgrim's Hammer if team in instance is HORDE
+    GO_ORGRIMS_HAMMER_UNFRIENDLY            = 201581, // Orgrim's Hammer if team in instance is ALLIANCE
+    // Just for me to remember:
+    // SELECT * FROM `gameobject_template` WHERE name LIKE "%Skybreaker%" OR name LIKE "%Orgrim's%"
+    // Strangely enough, they do not have the transport flag
     // Lady Deathwhisper
     GO_ORATORY_OF_THE_DAMNED_ENTRANCE       = 201563,
     GO_LADY_DEATHWHISPER_ELEVATOR           = 202220,
@@ -454,6 +501,14 @@ enum WorldStatesICC
     WORLDSTATE_SHOW_ATTEMPTS        = 4940,
     WORLDSTATE_ATTEMPTS_REMAINING   = 4941,
     WORLDSTATE_ATTEMPTS_MAX         = 4942,
+};
+
+enum AreaTriggers
+{
+    AREATRIGGER_RAMPARTS_BOTTOMLEFT = 5628,
+    AREATRIGGER_RAMPARTS_TOPLEFT    = 5629,
+    AREATRIGGER_RAMPARTS_BOTTOMRIGHT= 5630,
+    AREATRIGGER_RAMPARTS_TOPRIGHT   = 5631,
 };
 
 class spell_trigger_spell_from_caster : public SpellScriptLoader

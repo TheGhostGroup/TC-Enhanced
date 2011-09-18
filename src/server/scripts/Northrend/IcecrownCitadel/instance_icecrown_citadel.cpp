@@ -20,6 +20,7 @@
 #include "InstanceScript.h"
 #include "ScriptedCreature.h"
 #include "Map.h"
+#include "Transport.h"
 #include "PoolMgr.h"
 #include "icecrown_citadel.h"
 
@@ -88,6 +89,8 @@ class instance_icecrown_citadel : public InstanceMapScript
                 TeamInInstance = 0;
                 HeroicAttempts = MaxHeroicAttempts;
                 LadyDeathwisperElevatorGUID = 0;
+                GunshipBattleMuradinGUID = 0;
+                GunshipBattleSaurfangGUID = 0;
                 DeathbringerSaurfangGUID = 0;
                 DeathbringerSaurfangDoorGUID = 0;
                 DeathbringerSaurfangEventGUID = 0;
@@ -140,6 +143,9 @@ class instance_icecrown_citadel : public InstanceMapScript
                 IsOrbWhispererEligible = true;
                 ColdflameJetsState = NOT_STARTED;
                 BloodQuickeningState = NOT_STARTED;
+                FirstSquadState = NOT_STARTED;
+                SecondSquadState = NOT_STARTED;
+                SpireFrostWyrmState = NOT_STARTED;
                 BloodQuickeningTimer = 0;
                 BloodQuickeningMinutes = 0;
             }
@@ -206,6 +212,84 @@ class instance_icecrown_citadel : public InstanceMapScript
                     case NPC_GARROSH_HELLSCREAM:
                         if (TeamInInstance == ALLIANCE)
                             creature->UpdateEntry(NPC_KING_VARIAN_WRYNN, ALLIANCE);
+                        break;
+                    case NPC_KORKRON_PRIMALIST:
+                        if (TeamInInstance == ALLIANCE)
+                            creature->UpdateEntry(NPC_SKYBREAKER_HIEROPHANT, ALLIANCE);
+                        break;
+                    case NPC_KORKRON_DEFENDER:
+                        if (TeamInInstance == ALLIANCE)
+                            creature->UpdateEntry(NPC_SKYBREAKER_PROTECTOR, ALLIANCE);
+                        break;
+                    case NPC_KORKRON_NECROLYTE:
+                        if (TeamInInstance == ALLIANCE)
+                            creature->UpdateEntry(NPC_SKYBREAKER_SUMMONER, ALLIANCE);
+                        break;
+                    case NPC_KORKRON_ORACLE:
+                        if (TeamInInstance == ALLIANCE)
+                            creature->UpdateEntry(NPC_SKYBREAKER_LIGHT, ALLIANCE);
+                        break;
+                    case NPC_KORKRON_REAVER:
+                        if (TeamInInstance == ALLIANCE)
+                            creature->UpdateEntry(NPC_SKYBREAKER_DREADBLADE, ALLIANCE);
+                        break;
+                    case NPC_KORKRON_SNIPER:
+                        if (TeamInInstance == ALLIANCE)
+                            creature->UpdateEntry(NPC_SKYBREAKER_MARKSMAN, ALLIANCE);
+                        break;
+                    case NPC_KORKRON_TEMPLAR:
+                        if (TeamInInstance == ALLIANCE)
+                            creature->UpdateEntry(NPC_SKYBREAKER_VICAR, ALLIANCE);
+                        break;
+                    case NPC_KORKRON_VANQUISHER:
+                        if (TeamInInstance == ALLIANCE)
+                            creature->UpdateEntry(NPC_SKYBREAKER_VINDICATOR, ALLIANCE);
+                        break;
+                    case NPC_KORKRON_INVOKER:
+                        if (TeamInInstance == ALLIANCE)
+                            creature->UpdateEntry(NPC_SKYBREAKER_SORCERER, ALLIANCE);
+                        break;
+                    case NPC_SKYBREAKER_HIEROPHANT:
+                        if (TeamInInstance == HORDE)
+                            creature->UpdateEntry(NPC_KORKRON_PRIMALIST, HORDE);
+                        break;
+                    case NPC_SKYBREAKER_PROTECTOR:
+                        if (TeamInInstance == HORDE)
+                            creature->UpdateEntry(NPC_KORKRON_DEFENDER, HORDE);
+                        break;
+                    case NPC_SKYBREAKER_SUMMONER:
+                        if (TeamInInstance == HORDE)
+                            creature->UpdateEntry(NPC_KORKRON_NECROLYTE, HORDE);
+                        break;
+                    case NPC_SKYBREAKER_LIGHT:
+                        if (TeamInInstance == HORDE)
+                            creature->UpdateEntry(NPC_KORKRON_ORACLE, HORDE);
+                        break;
+                    case NPC_SKYBREAKER_DREADBLADE:
+                        if (TeamInInstance == HORDE)
+                            creature->UpdateEntry(NPC_KORKRON_REAVER, HORDE);
+                        break;
+                    case NPC_SKYBREAKER_MARKSMAN:
+                        if (TeamInInstance == HORDE)
+                            creature->UpdateEntry(NPC_KORKRON_SNIPER, HORDE);
+                        break;
+                    case NPC_SKYBREAKER_VICAR:
+                        if (TeamInInstance == HORDE)
+                            creature->UpdateEntry(NPC_KORKRON_TEMPLAR, HORDE);
+                        break;
+                    case NPC_SKYBREAKER_VINDICATOR:
+                        if (TeamInInstance == HORDE)
+                            creature->UpdateEntry(NPC_KORKRON_VANQUISHER, HORDE);
+                        break;
+                    case NPC_SKYBREAKER_SORCERER:
+                        if (TeamInInstance == HORDE)
+                            creature->UpdateEntry(NPC_KORKRON_INVOKER, HORDE);
+                        break;
+                    case NPC_GB_MURADIN_BRONZEBEARD:
+                        GunshipBattleMuradinGUID = creature->GetGUID();
+                        break;
+                    case NPC_GB_HIGH_OVERLORD_SAURFANG:
+                        GunshipBattleSaurfangGUID = creature->GetGUID();
                         break;
                     case NPC_DEATHBRINGER_SAURFANG:
                         DeathbringerSaurfangGUID = creature->GetGUID();
@@ -559,6 +643,12 @@ class instance_icecrown_citadel : public InstanceMapScript
                         return BloodQuickeningState;
                     case DATA_HEROIC_ATTEMPTS:
                         return HeroicAttempts;
+                    case DATA_FIRST_SQUAD_STATE:
+                        return FirstSquadState;
+                    case DATA_SECOND_SQUAD_STATE:
+                        return SecondSquadState;
+                    case DATA_SPIRE_FROSTWYRM_STATE:
+                        return SpireFrostWyrmState;
                     default:
                         break;
                 }
@@ -594,6 +684,10 @@ class instance_icecrown_citadel : public InstanceMapScript
                         return uiTerenasFighter;
                     case GUID_SPIRIT_WARDEN:
                         return uiSpiritWarden;
+                    case DATA_GB_HIGH_OVERLORD_SAURFANG:
+                        return GunshipBattleSaurfangGUID;
+                    case DATA_GB_MURADIN_BRONZEBEARD:
+                        return GunshipBattleMuradinGUID;
                     case DATA_DEATHBRINGER_SAURFANG:
                         return DeathbringerSaurfangGUID;
                     case DATA_SAURFANG_EVENT_NPC:
@@ -666,6 +760,18 @@ class instance_icecrown_citadel : public InstanceMapScript
                                 elevator->SetUInt32Value(GAMEOBJECT_LEVEL, 0);
                                 elevator->SetGoState(GO_STATE_READY);
                             }
+                        }
+                        break;
+                    case DATA_GUNSHIP_EVENT:
+                        switch(state)
+                        {
+                            case DONE:
+                            case FAIL:
+                                // Here we'll handle the movement of the gunship from the combat zone to the room where we fight Saurfang
+                                break;
+                            case NOT_STARTED:
+                                // Spawn the transport
+                                break;
                         }
                         break;
                     case DATA_DEATHBRINGER_SAURFANG:
@@ -806,6 +912,30 @@ class instance_icecrown_citadel : public InstanceMapScript
             {
                 switch (type)
                 {
+					case DATA_FIRST_SQUAD_STATE:
+                    {
+                        if (data == FirstSquadState)
+                            return;
+
+                        FirstSquadState = data;
+                        break;
+                    }
+                    case DATA_SECOND_SQUAD_STATE:
+                    {
+                        if (data == SecondSquadState)
+                            return;
+
+                        SecondSquadState = data;
+                        break;
+                    }
+                    case DATA_SPIRE_FROSTWYRM_STATE:
+                    {
+                        if (data == SpireFrostWyrmState)
+                            return;
+
+                        SpireFrostWyrmState = data;
+                        break;
+                    }
                     case DATA_NECK_DEEP_ACHIEVEMENT:         
                         IsNeckDeep = data ? true : false;
                         break;
@@ -1139,13 +1269,34 @@ class instance_icecrown_citadel : public InstanceMapScript
                 return true;
             }
 
+            Transport* SetTransportPosition(Transport* t, uint32 wpId, uint32 goEntry)
+            {
+                uint32 transportLowGuid = sObjectMgr->GenerateLowGuid(HIGHGUID_MO_TRANSPORT);
+                uint32 wantedWp = wpId;
+                uint32 wpCount = t->m_WayPoints.size();
+                if (wpId > wpCount)
+                {
+                    sLog->outError("ICCGunship::SetTransportWaypointId: Waypoint ID %u specified is greater than m_Waypoints.size(), assuming we want the last waypoint.", wpId);
+                    wantedWp = wpCount;
+                }
+
+                // Creates the Gameobject
+                if (!t->Create(transportLowGuid, goEntry, t->m_WayPoints[wantedWp].mapid, t->m_WayPoints[wantedWp].x, t->m_WayPoints[wantedWp].y, t->m_WayPoints[wantedWp].z, 0.0f, 0, 0))
+                {
+                    delete t;
+                    return NULL;
+                }
+
+                return t;
+            }
             std::string GetSaveData()
             {
                 OUT_SAVE_INST_DATA;
 
                 std::ostringstream saveStream;
                 saveStream << "I C " << GetBossSaveData() << HeroicAttempts << ' '
-                    << ColdflameJetsState << ' ' << BloodQuickeningState << ' ' << BloodQuickeningMinutes;
+                    << ColdflameJetsState << ' ' << BloodQuickeningState << ' ' << BloodQuickeningMinutes << ' '
+                    << FirstSquadState << ' ' << SecondSquadState << ' ' << SpireFrostWyrmState;
 
                 OUT_SAVE_INST_DATA_COMPLETE;
                 return saveStream.str();
@@ -1186,6 +1337,10 @@ class instance_icecrown_citadel : public InstanceMapScript
                     loadStream >> temp;
                     BloodQuickeningState = temp ? DONE : NOT_STARTED;   // DONE means finished (not success/fail)
                     loadStream >> BloodQuickeningMinutes;
+
+                    loadStream >> FirstSquadState;
+                    loadStream >> SecondSquadState;
+                    loadStream >> SpireFrostWyrmState;
                 }
                 else
                     OUT_LOAD_INST_DATA_FAIL;
@@ -1220,9 +1375,16 @@ class instance_icecrown_citadel : public InstanceMapScript
                 }
             }
 
+            void CreateTransport(uint32 goEntry, uint32 period)
+            {
+                // Still a WIP
+                return;
+            }
         protected:
             std::set<uint64> ColdflameJetGUIDs;
             uint64 LadyDeathwisperElevatorGUID;
+            uint64 GunshipBattleMuradinGUID;
+            uint64 GunshipBattleSaurfangGUID;
             uint64 DeathbringerSaurfangGUID;
             uint64 DeathbringerSaurfangDoorGUID;
             uint64 DeathbringerSaurfangEventGUID;   // Muradin Bronzebeard or High Overlord Saurfang
@@ -1275,6 +1437,9 @@ class instance_icecrown_citadel : public InstanceMapScript
             uint32 BloodQuickeningState;
             uint32 HeroicAttempts;
             uint16 BloodQuickeningMinutes;
+            uint32 FirstSquadState;
+            uint32 SecondSquadState;
+            uint32 SpireFrostWyrmState;
             bool IsBonedEligible;
             bool IsOozeDanceEligible;
             bool IsNauseaEligible;

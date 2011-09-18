@@ -23,6 +23,7 @@
 #include "icecrown_citadel.h"
 #include "MapManager.h"
 #include "Transport.h"
+#include "Vehicle.h"
 #include "Spell.h"
 
 struct NPCsPositions
@@ -419,7 +420,7 @@ class npc_muradin_gunship : public CreatureScript
                     t->Update(1);
                     t->BuildStopMovePacket(tMap);
 
-                    pCreature->MonsterYell("Transport was spawned \o/", LANG_UNIVERSAL, 0);
+                    pCreature->MonsterYell("Transport was spawned", LANG_UNIVERSAL, 0);
                 }
             }
 
@@ -1075,7 +1076,9 @@ class spell_icc_rocket_artillery_triggered : public SpellScriptLoader
             void HandleEffect(SpellEffIndex /*effIndex*/)
             {
                 Unit* caster = GetCaster();
-                WorldLocation* targetedArea = GetTargetDest();
+                //WorldLocation* targetedArea = GetTargetDest();
+				WorldLocation const* const targetedArea = GetTargetDest();
+
                 if (!targetedArea || !caster || caster->GetTypeId() != TYPEID_UNIT)
                     return;
 
@@ -1092,7 +1095,7 @@ class spell_icc_rocket_artillery_triggered : public SpellScriptLoader
                             if (positionInList.m_positionZ == targetedPosition.m_positionZ)
                             {
                                 // Don't give a fuck about orientation
-                                marks.remove(*itr);
+                                //marks.remove(*itr);
                             }
                 }
 				
