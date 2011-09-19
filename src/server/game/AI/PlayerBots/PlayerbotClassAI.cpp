@@ -88,8 +88,8 @@ bool PlayerbotClassAI::listAuras(Unit *u)
     Unit::AuraMap &vAuras = target->GetOwnedAuras();
     for(Unit::AuraMap::const_iterator itr = vAuras.begin(); itr!=vAuras.end(); ++itr)
     {
-        //SpellEntry const *spellInfo = (*itr).second->GetSpellProto();
-        const SpellEntry *spellInfo = itr->second->GetSpellProto();
+        //SpellEntry const *spellInfo = (*itr).second->GetSpellInfo();
+        const SpellInfo *spellInfo = itr->second->GetSpellInfo();
         const std::string name = spellInfo->SpellName[loc];
         sLog->outDebug(LOG_FILTER_NETWORKIO, "aura = %u %s", spellInfo->Id, name.c_str());
     }
@@ -98,7 +98,8 @@ bool PlayerbotClassAI::listAuras(Unit *u)
 
 bool PlayerbotClassAI::HasAuraName (Unit *unit, uint32 spellId, uint64 casterGuid)
 {
-    const SpellEntry *const pSpellInfo = GetSpellStore()->LookupEntry (spellId);
+    //const SpellInfo *const pSpellInfo = sSpellMgr->GetSpellInfo()->LookupEntry (spellId);
+	SpellInfo const* pSpellInfo = sSpellMgr->GetSpellInfo(spellId);
     if(!pSpellInfo) return false;
     int loc = m_bot->GetSession()->GetSessionDbcLocale();
     const std::string  name = pSpellInfo->SpellName[loc];
@@ -115,8 +116,8 @@ bool PlayerbotClassAI::HasAuraName (Unit *target, std::string spell, uint64 cast
     Unit::AuraMap &vAuras = target->GetOwnedAuras();
     for(Unit::AuraMap::const_iterator itr = vAuras.begin(); itr!=vAuras.end(); ++itr)
     {
-        //SpellEntry const *spellInfo = (*itr).second->GetSpellProto();
-        const SpellEntry *spellInfo = itr->second->GetSpellProto();
+        //SpellEntry const *spellInfo = (*itr).second->GetSpellInfo();
+        const SpellInfo *spellInfo = itr->second->GetSpellInfo();
         const std::string name = spellInfo->SpellName[loc];
         if(!spell.compare(name))
         //if(!strcmp(name.c_str(),spell.c_str()))
@@ -134,14 +135,15 @@ bool PlayerbotClassAI::castDispel (uint32 dispelSpell, Unit *dTarget, bool check
 {
     if (dispelSpell == 0 || !dTarget ) return false;
     //if (!canCast(dispelSpell, dTarget, true)) return false; //Needless cpu cycles wasted, usually a playerbot can cast a dispell
-    const SpellEntry *dSpell = GetSpellStore()->LookupEntry(dispelSpell);
+    //const SpellEntry *dSpell = GetSpellStore()->LookupEntry(dispelSpell);
+	SpellInfo const* dSpell = sSpellMgr->GetSpellInfo(dispelSpell);
     if (!dSpell) return false;
 
     for (uint8 i = 0 ; i < MAX_SPELL_EFFECTS ; ++i)
     {
-        if (dSpell->Effect[i] != (uint32)SPELL_EFFECT_DISPEL) continue;
-        uint32 dispel_type = dSpell->EffectMiscValue[i];
-        uint32 dispelMask  = GetDispelMask(DispelType(dispel_type));
+        if (dSpell->Effects[i].MiscValue != (uint32)SPELL_EFFECT_DISPEL) continue;
+        uint32 dispel_type = dSpell->Effects[i].MiscValue;
+        //uint32 dispelMask  = GetDispellMask(DispelType(dispel_type));
         Unit::AuraMap const& auras = dTarget->GetOwnedAuras();
         for (Unit::AuraMap::const_iterator itr = auras.begin(); itr != auras.end(); itr++)
         {
@@ -150,11 +152,11 @@ bool PlayerbotClassAI::castDispel (uint32 dispelSpell, Unit *dTarget, bool check
             if (!aurApp)
                 continue;
 
-            if ((1<<aura->GetSpellProto()->Dispel) & dispelMask)
-            {
-                if(aura->GetSpellProto()->Dispel == DISPEL_MAGIC)
+            /*if ((1<<aura->GetSpellInfo()->Dispel) & dispellMask)
+            {*/
+                if(aura->GetSpellInfo()->Dispel == DISPEL_MAGIC)
                 {
-                    bool positive = aurApp->IsPositive() ? (!(aura->GetSpellProto()->AttributesEx & SPELL_ATTR0_HIDDEN_CLIENTSIDE)) : false;
+                    bool positive = aurApp->IsPositive() ? (!(aura->GetSpellInfo()->AttributesEx & SPELL_ATTR0_HIDDEN_CLIENTSIDE)) : false;
 
                     // do not remove positive auras if friendly target
                     //               negative auras if non-friendly target
@@ -162,8 +164,8 @@ bool PlayerbotClassAI::castDispel (uint32 dispelSpell, Unit *dTarget, bool check
                         continue;
                 }
                 // If there is a successfull match return, else continue searching.
-                if (CastSpell(dSpell, dTarget, checkFirst, castExistingAura, skipFriendlyCheck, skipEquipStanceCheck)) { return true; }
-            }
+                //if (CastSpell(dSpell, dTarget, checkFirst, castExistingAura, skipFriendlyCheck, skipEquipStanceCheck)) { return true; }
+            //}
         }
     }
     return false;
@@ -184,11 +186,11 @@ bool PlayerbotClassAI::castSelfCCBreakers (uint32 castList[])
                 if (!aurApp)
                     continue;
 
-                if ( ( aura->GetSpellProto()->Mechanic == MECHANIC_SNARE ) || ( aura->GetSpellProto()->Mechanic == MECHANIC_ROOT ) )
+                if ( ( aura->GetSpellInfo()->Mechanic == MECHANIC_SNARE ) || ( aura->GetSpellInfo()->Mechanic == MECHANIC_ROOT ) )
                 {
-                    if(aura->GetSpellProto()->Dispel == DISPEL_MAGIC)
+                    if(aura->GetSpellInfo()->Dispel == DISPEL_MAGIC)
                     {
-                        bool positive = aurApp->IsPositive() ? (!(aura->GetSpellProto()->AttributesEx & SPELL_ATTR0_UNK7)) : false;
+                        bool positive = aurApp->IsPositive() ? (!(aura->GetSpellInfo()->AttributesEx & SPELL_ATTR0_UNK7)) : false;
 
                         // do not remove positive auras if friendly target
                         //               negative auras if non-friendly target
@@ -217,17 +219,17 @@ bool PlayerbotClassAI::castSelfCCBreakers (uint32 castList[])
     {
         dispelSpell = castList[j];
         if (dispelSpell == 0 || !dTarget->HasSpell(dispelSpell) || !CanCast(dispelSpell, dTarget, true)) continue;
-        SpellEntry const *dSpell = GetSpellStore()->LookupEntry(dispelSpell);
+        SpellInfo const *dSpell = sSpellMgr->GetSpellInfo(dispelSpell);
         if (!dSpell) continue;
 
-        for (uint8 i = 0 ; i < MAX_SPELL_EFFECTS ; ++i)
+       /*for (uint8 i = 0 ; i < MAX_SPELL_EFFECTS ; ++i)
         {
             if (dSpell->Effect[i] != (uint32)SPELL_EFFECT_DISPEL && dSpell->Effect[i] != (uint32)SPELL_EFFECT_APPLY_AURA) continue;
             if (dSpell->Effect[i] == (uint32)SPELL_EFFECT_APPLY_AURA && (
                 (dSpell->EffectApplyAuraName[i] != (uint32) SPELL_AURA_MECHANIC_IMMUNITY) ||
                 (dSpell->EffectApplyAuraName[i] != (uint32) SPELL_AURA_DISPEL_IMMUNITY)
                 )) continue;
-
+*/
             Unit::AuraMap const& auras = dTarget->GetOwnedAuras();
             for (Unit::AuraMap::const_iterator itr = auras.begin(); itr != auras.end(); itr++)
             {
@@ -235,24 +237,24 @@ bool PlayerbotClassAI::castSelfCCBreakers (uint32 castList[])
                 AuraApplication * aurApp = aura->GetApplicationOfTarget(dTarget->GetGUID());
                 if (!aurApp) continue;
 
-                if (aura->GetSpellProto() && (
-                    (dSpell->Effect[i] == (uint32)SPELL_EFFECT_DISPEL  && ((1<<aura->GetSpellProto()->Dispel) & GetDispelMask(DispelType(dSpell->EffectMiscValue[i]))) )
-                    || (dSpell->EffectApplyAuraName[i] == (uint32) SPELL_AURA_MECHANIC_IMMUNITY && ( GetAllSpellMechanicMask(aura->GetSpellProto()) & ( 1 << dSpell->EffectMiscValue[i]) ) )
-                    || (dSpell->EffectApplyAuraName[i] == (uint32) SPELL_AURA_DISPEL_IMMUNITY && ( (1<<aura->GetSpellProto()->Dispel) & GetDispelMask(DispelType(dSpell->EffectMiscValue[i])) ) )
+               /* if (aura->GetSpellInfo() && (
+                    (dSpell->Effect[i] == (uint32)SPELL_EFFECT_DISPEL  && ((1<<aura->GetSpellInfo()->Dispel) & GetDispelMask(DispelType(dSpell->EffectMiscValue[i]))) )
+                    || (dSpell->EffectApplyAuraName[i] == (uint32) SPELL_AURA_MECHANIC_IMMUNITY && ( GetAllSpellMechanicMask(aura->GetSpellInfo()) & ( 1 << dSpell->EffectMiscValue[i]) ) )
+                    || (dSpell->EffectApplyAuraName[i] == (uint32) SPELL_AURA_DISPEL_IMMUNITY && ( (1<<aura->GetSpellInfo()->Dispel) & GetDispelMask(DispelType(dSpell->EffectMiscValue[i])) ) )
                     ) )
-                {
-                    if(aura->GetSpellProto()->Dispel == DISPEL_MAGIC)
+                {*/
+                    if(aura->GetSpellInfo()->Dispel == DISPEL_MAGIC)
                     {
-                        bool positive = aurApp->IsPositive() ? (!(aura->GetSpellProto()->AttributesEx & SPELL_ATTR0_HIDDEN_CLIENTSIDE)) : false;
+                        bool positive = aurApp->IsPositive() ? (!(aura->GetSpellInfo()->AttributesEx & SPELL_ATTR0_HIDDEN_CLIENTSIDE)) : false;
                         if(positive)continue;
                     }
                     return CastSpell(dispelSpell, dTarget, false);
-                }
+                //}
             }
-        }
+        }return false;
     }
-    return false;
-}
+    
+
 
 bool PlayerbotClassAI::DoSupportRaid(Player *gPlayer, float radius, bool dResurrect, bool dGroupHeal, bool dHeal, bool dCure, bool dBuff)
 {
@@ -443,7 +445,7 @@ uint8 PlayerbotClassAI::GetHealthPercentRaid(Player *gPlayer, uint8 &countNeedHe
     if(!unitList.empty()){
       for (std::list<Unit*>::iterator itr = unitList.begin() ; itr!=unitList.end();++itr) {
         //Player *tPlayer = GetPlayerBot()->GetObjPlayer((*itr)->GetGUID());
-        Unit *tPlayer = sObjectMgr->GetPlayer((*itr)->GetGUID());
+        Unit *tPlayer = ObjectAccessor::FindPlayer((*itr)->GetGUID());
         if(tPlayer == NULL) continue;
         if(tPlayer->isDead()) continue;
         if(GetPlayerBot()->GetAreaId() != tPlayer->GetAreaId()) continue;
@@ -504,7 +506,7 @@ Unit *PlayerbotClassAI::FindMainTankInRaid(Player *gPlayer)
         if(result)
         {
             uint64 pGuid = MAKE_NEW_GUID(result->Fetch()->GetInt32(),0,HIGHGUID_PLAYER);
-            pPlayer = sObjectMgr->GetPlayer(pGuid);
+            pPlayer = ObjectAccessor::FindPlayer(pGuid);
             if (pPlayer && pGroup->IsMember(pGuid) && pPlayer->isAlive()){
                 mainTank = pPlayer;
                 return pPlayer;
@@ -521,7 +523,7 @@ Unit *PlayerbotClassAI::FindMainTankInRaid(Player *gPlayer)
     if (!unitList.empty()){
       for (std::list<Unit*>::iterator itr = unitList.begin() ; itr!=unitList.end();++itr) {
         //Player *tPlayer = GetPlayerBot()->GetObjPlayer((*itr)->GetGUID());
-        Unit *tPlayer = sObjectMgr->GetPlayer((*itr)->GetGUID());
+        Unit *tPlayer = ObjectAccessor::FindPlayer((*itr)->GetGUID());
         if (tPlayer == NULL) continue;
         if (tPlayer->isDead()) continue;
         if (GetPlayerBot()->GetAreaId() != tPlayer->GetAreaId()) continue;
@@ -563,7 +565,7 @@ Unit *PlayerbotClassAI::FindMainAssistInRaid(Player *gPlayer)
           if(result)
         {
             uint64 pGuid = MAKE_NEW_GUID(result->Fetch()->GetInt32(),0,HIGHGUID_PLAYER);
-            pPlayer = sObjectMgr->GetPlayer(pGuid);
+            pPlayer = ObjectAccessor::FindPlayer(pGuid);
             if (pPlayer && pGroup->IsMember(pGuid) && pPlayer->isAlive()){
                 return pPlayer;
             }
@@ -579,7 +581,7 @@ Player * PlayerbotClassAI::FindMage(Player *gPlayer)
     Group::MemberSlotList const &groupSlot = gPlayer->GetGroup()->GetMemberSlots();
     for(Group::member_citerator itr = groupSlot.begin(); itr != groupSlot.end(); itr++)
     {
-        Player *tPlayer = sObjectMgr->GetPlayer(itr->guid);
+        Player *tPlayer = ObjectAccessor::FindPlayer(itr->guid);
 
         if(tPlayer == NULL) continue;
         if(tPlayer->GetGUID() == GetPlayerBot()->GetGUID()) continue;

@@ -302,6 +302,7 @@ enum CreaturesIds
 
     // The Lich King
     NPC_THE_LICH_KING                           = 36597,
+	NPC_WORLD_TRIGGER                           = 22515,
     NPC_TIRION_ICC                              = 38995,
     NPC_PLATFORM_DESTRUCTIBLE_EDGE_STALKER      = 22515,
     NPC_TERENAS_MENETHIL                        = 38579,

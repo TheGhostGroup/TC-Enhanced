@@ -96,8 +96,8 @@ void PlayerbotShamanAI::LoadSpells() {
     uint32 mwtrigger = ai->getSpellIdExact("Maelstrom Weapon",true);
     if (mwtrigger)
     {
-        SpellEntry const *mwtSpell = GetSpellStore()->LookupEntry(mwtrigger);
-        if (mwtSpell && mwtSpell->EffectTriggerSpell[0] > 0) MAELSTROM_WEAPON = mwtSpell->EffectTriggerSpell[0];
+        SpellInfo const *mwtSpell = sSpellMgr->GetSpellInfo(mwtrigger);
+        if (mwtSpell && mwtSpell->Effects[0].TriggerSpell > 0) MAELSTROM_WEAPON = mwtSpell->Effects[0].TriggerSpell;
     }
 
     TALENT_ELEMENTAL = ELEMENTAL_MASTERY;
@@ -460,9 +460,9 @@ bool PlayerbotShamanAI::ChangeTotems(uint32 mode)
     for (int i = 0; i < 4; i++)
     {
         if (!totz[i]) continue;
-        SpellEntry const *tSpell = GetSpellStore()->LookupEntry(totz[i]);
+        SpellInfo const *tSpell = sSpellMgr->GetSpellInfo(totz[i]);
         if (!tSpell) continue;
-        uint32 tEntry = (uint32) tSpell->EffectMiscValue[0];
+        uint32 tEntry = (uint32) tSpell->Effects[0].MiscValue;
         if (!tEntry) continue;
         CreatureTemplate const *totemEntry = sObjectMgr->GetCreatureTemplate(tEntry);
         if (!tEntry) continue;
@@ -515,10 +515,10 @@ bool PlayerbotShamanAI::ChangeWeaponEnchants()
         weap = m_bot->GetWeaponForAttack(BASE_ATTACK);
         if (weap)
         {
-            tSpell = GetSpellStore()->LookupEntry(mhEnch);
-            if (tSpell && tSpell->EffectMiscValue[0] > 0)
+            SpellInfo const* tSpell = sSpellMgr->GetSpellInfo(mhEnch);
+            if (tSpell && tSpell->Effects[0].MiscValue > 0)
             {
-                enchant_id = (uint32) tSpell->EffectMiscValue[0];
+                enchant_id = (uint32) tSpell->Effects[0].MiscValue;
                 if (enchant_id && weap->GetEnchantmentId(TEMP_ENCHANTMENT_SLOT) != enchant_id && sSpellItemEnchantmentStore.LookupEntry(enchant_id))
                 {
                     m_bot->ApplyEnchantment(weap,TEMP_ENCHANTMENT_SLOT, false); //Remove old enchantment effect
@@ -535,10 +535,10 @@ bool PlayerbotShamanAI::ChangeWeaponEnchants()
         weap = m_bot->GetWeaponForAttack(OFF_ATTACK);
         if (weap)
         {
-            tSpell = GetSpellStore()->LookupEntry(ohEnch);
-            if (tSpell && tSpell->EffectMiscValue[0] > 0)
+            SpellInfo const* tSpell = sSpellMgr->GetSpellInfo(ohEnch);
+            if (tSpell && tSpell->Effects[0].MiscValue > 0)
             {
-                enchant_id = (uint32) tSpell->EffectMiscValue[0];
+                enchant_id = (uint32) tSpell->Effects[0].MiscValue;
                 if (enchant_id && weap->GetEnchantmentId(TEMP_ENCHANTMENT_SLOT) != enchant_id && sSpellItemEnchantmentStore.LookupEntry(enchant_id))
                 {
                     m_bot->ApplyEnchantment(weap,TEMP_ENCHANTMENT_SLOT, false); //Remove old enchantment effect

@@ -2408,9 +2408,7 @@ bool Player::TeleportTo(uint32 mapid, float x, float y, float z, float orientati
         if (!sMapMgr->CanPlayerEnter(mapid, this, false))
             return false;
 
-        // If the map is not created, assume it is possible to enter it.
-        // It will be created in the WorldPortAck.
-        Map* map = sMapMgr->FindMap(mapid);
+        Map* map = sMapMgr->CreateMap(mapid, this, 0);
         if (!map || map->CanEnter(this))
         {
             //lets reset near teleport flag if it wasn't reset during chained teleports
@@ -2665,7 +2663,7 @@ void Player::RemoveFromWorld()
 
 Player *Player::GetObjPlayer(uint64 guid)
 {
-    return sObjectMgr->GetPlayer(guid);
+    return ObjectAccessor::FindPlayer(guid);
 }
 
 void Player::RemoveBot()
@@ -3299,7 +3297,7 @@ void Player::RemoveFromGroup(Group* group, uint64 guid, RemoveMethod method /* =
 {
     if (group)
     {
-        Player *_player = sObjectMgr->GetPlayer(guid);
+        Player *_player = ObjectAccessor::FindPlayer(guid);
 
         if(_player!=NULL) {
             WorldSession *session= _player->GetSession();
@@ -3321,7 +3319,7 @@ void Player::RemoveFromGroup(Group* group, uint64 guid, RemoveMethod method /* =
                 session->LogoutPlayerBot(botPlayer->GetGUID(),true);
             }
 
-			if (!sObjectMgr->GetPlayer(guid)->GetGroup() || group->GetMembersCount()==0) return;
+			if (!ObjectAccessor::FindPlayer(guid)->GetGroup() || group->GetMembersCount()==0) return;
         }
         group->RemoveMember(guid, method, kicker, reason);
         group = NULL;
@@ -16373,6 +16371,9 @@ void Player::KilledMonsterCredit(uint32 entry, uint64 guid)
             }
         }
     }
+
+    //Playerbot mod
+    if(m_playerbotAI != NULL) m_playerbotAI->KilledMonster(entry, guid);
 }
 
 void Player::KilledPlayerCredit()
@@ -16413,9 +16414,6 @@ void Player::KilledPlayerCredit()
             }
         }
     }
-
-    //Playerbot mod
-    if(m_playerbotAI != NULL) m_playerbotAI->KilledMonster(entry, guid);
 }
 
 void Player::CastedCreatureOrGO(uint32 entry, uint64 guid, uint32 spell_id)
@@ -18941,7 +18939,7 @@ void Player::SaveToDB()
         "todayKills, yesterdayKills, chosenTitle, knownCurrencies, watchedFaction, drunk, health, power1, power2, power3, "
         "power4, power5, power6, power7, latency, speccount, activespec, exploredZones, equipmentCache, ammoId, knownTitles, actionBars, grantableLevels) VALUES ("
         << GetGUIDLow() << ','
-        << GetSession()->GetAccountId() << ', ''
+        << GetSession()->GetAccountId() << ", '"
         << sql_name << "', "
         << uint32(getRace()) << ','
         << uint32(getClass()) << ','
@@ -21444,6 +21442,7 @@ void Player::UpdateHomebindTime(uint32 time)
 void Player::UpdatePvPState(bool onlyFFA)
 {
     // TODO: should we always synchronize UNIT_FIELD_BYTES_2, 1 of controller and controlled?
+    // no, we shouldn't, those are checked for affecting player by client
     if (!pvpInfo.inNoPvPArea && !isGameMaster()
         && (pvpInfo.inFFAPvPArea || sWorld->IsFFAPvPRealm()))
     {
@@ -23898,7 +23897,7 @@ void Player::UpdateCharmedAI()
         GetMotionMaster()->MoveFollow(charmer, PET_FOLLOW_DIST, PET_FOLLOW_ANGLE);
 
     Unit* target = getVictim();
-    if (!target || !charmer->canAttack(target))
+    if (!target || !charmer->IsValidAttackTarget(target))
     {
         target = charmer->SelectNearestTarget();
         if (!target)

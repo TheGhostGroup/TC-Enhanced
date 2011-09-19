@@ -684,7 +684,7 @@ bool IRCCmd::AcctIsLoggedIn(std::string USER)
 
 std::string IRCCmd::AcctIsBanned(std::string ACCT)
 {
-    uint32 acctid = sAccountMgr->GetId(ACCT);
+    uint32 acctid = AccountMgr::GetId(ACCT);
     std::string banned = "NOTBANNED";
     QueryResult result = LoginDatabase.PQuery("SELECT banreason FROM ip_banned WHERE ip=(SELECT last_ip FROM account WHERE id = '%i')", acctid);
     if (result)
@@ -719,7 +719,7 @@ int IRCCmd::AcctLevel(std::string plnme)
     uint32 account_id = 0;
     uint32 security = 0;
     account_id = sObjectMgr->GetPlayerAccountIdByGUID(guid);
-    security = sAccountMgr->GetSecurity(account_id);
+    security = AccountMgr::GetSecurity(account_id);
     return security;
 }
 
@@ -750,7 +750,7 @@ int IRCCmd::GetAcctIDFromName(std::string sName)
         if ((*i)->Name == sName)
         {
             uint32 acct_id = 0;
-            acct_id = sAccountMgr->GetId((*i)->UName.c_str());
+            acct_id = AccountMgr::GetId((*i)->UName.c_str());
             return acct_id;
         }
     }

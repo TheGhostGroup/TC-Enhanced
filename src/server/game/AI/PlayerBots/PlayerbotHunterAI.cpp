@@ -218,7 +218,7 @@ void PlayerbotHunterAI::DoNextCombatManeuver(Unit *pTarget)
 
         }
         // Pet tanking behaviour
-        if (pet->GetGUID() == m_tank->GetGUID() || isUnderAttack(m_bot) || isUnderAttack(pet))
+        /*if (pet->GetGUID() == m_tank->GetGUID() || isUnderAttack(m_bot) || isUnderAttack(pet))
         {
             if (GROWL) pet->GetCharmInfo()->SetSpellAutocast(GROWL,true); //Autocast growl
             if (BAD_ATTITUDE) pet->GetCharmInfo()->SetSpellAutocast(BAD_ATTITUDE,true);
@@ -230,7 +230,7 @@ void PlayerbotHunterAI::DoNextCombatManeuver(Unit *pTarget)
             if (GROWL) pet->GetCharmInfo()->SetSpellAutocast(GROWL,false); //Do not try to get aggro
             if (BAD_ATTITUDE) pet->GetCharmInfo()->SetSpellAutocast(BAD_ATTITUDE,false);
             if (COWER) pet->GetCharmInfo()->SetSpellAutocast(COWER,true); //Autocast cower
-        }
+        }*/
         // NORMAL PET dps attacks
         if (petThreat < threatThreshold || pet->GetGUID() == m_tank->GetGUID() || isUnderAttack(m_bot))
         {

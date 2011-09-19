@@ -300,7 +300,7 @@ bool ChatHandler::HandlePlayerbotMainTankCommand(const char *args)
     if(!*args) {
 
         if (pGuid>0) {
-            Player *pPlayer = sObjectMgr->GetPlayer(pGuid);
+            Player *pPlayer = ObjectAccessor::FindPlayer(pGuid);
 
             if (pPlayer  && pPlayer->isAlive()){
                 PSendSysMessage("Main tank is %s.", pPlayer->GetName());
@@ -325,7 +325,7 @@ bool ChatHandler::HandlePlayerbotMainTankCommand(const char *args)
         if (m_session->GetPlayer()->GetGroup()->IsMember(guid)) {
             group->SetGroupMemberFlag(pGuid,false, MEMBER_FLAG_MAINTANK); // clear old one
             group->SetGroupMemberFlag(guid, true, MEMBER_FLAG_MAINTANK);  // set new one
-            Player *pPlayer = sObjectMgr->GetPlayer(guid);
+            Player *pPlayer = ObjectAccessor::FindPlayer(guid);
             if (pPlayer->IsInWorld())
                 PSendSysMessage("Main tank is %s.", pPlayer->GetName());
             else

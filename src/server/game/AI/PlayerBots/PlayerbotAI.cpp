@@ -194,7 +194,7 @@ uint32 PlayerbotAI::getSpellId(const char *args, bool master) const
     {
         uint32 spellId = itr->first;
 
-        if(itr->second->state == PLAYERSPELL_REMOVED || itr->second->disabled || IsPassiveSpell(spellId)) continue;
+        if(itr->second->state == PLAYERSPELL_REMOVED || itr->second->disabled || SPELL_ATTR0_PASSIVE) continue;
 
         const SpellEntry *pSpellInfo = sSpellStore.LookupEntry(spellId);
         if(!pSpellInfo) continue;
@@ -237,7 +237,7 @@ uint32 PlayerbotAI::getSpellIdExact(const char *args, bool includePassive, bool 
     for(PlayerSpellMap::iterator itr = m_bot->GetSpellMap().begin(); itr != m_bot->GetSpellMap().end(); ++itr)
     {
         uint32 spellId = itr->first;
-        if(itr->second->state == PLAYERSPELL_REMOVED || itr->second->disabled || ( !includePassive && IsPassiveSpell(spellId))) continue;
+        if(itr->second->state == PLAYERSPELL_REMOVED || itr->second->disabled || ( !includePassive && SPELL_ATTR0_PASSIVE)) continue;
         const SpellEntry *pSpellInfo = sSpellStore.LookupEntry(spellId);
         if(!pSpellInfo) continue;
         if(pSpellInfo->Effect[0] == SPELL_EFFECT_LEARN_SPELL) continue; //This is a learn spell
@@ -1231,7 +1231,7 @@ void PlayerbotAI::HandleBotOutgoingPacket(const WorldPacket &packet)
             WorldPacket p(packet);
             uint64 guid = extractGuid(p);
             //uint64 guid; p >> guid;
-            Player *tPlayer = sObjectMgr->GetPlayer(guid);
+            Player *tPlayer = ObjectAccessor::FindPlayer(guid);
             if(!tPlayer) return;
             if (!m_master || !m_bot) return;
             if(guid == m_bot->GetGUID()) return;
@@ -1319,7 +1319,7 @@ void PlayerbotAI::HandleBotOutgoingPacket(const WorldPacket &packet)
             {
                 const Group *const grp = m_bot->GetGroupInvite();
                 if(!grp) return;
-                Player *const inviter = sObjectMgr->GetPlayer(grp->GetLeaderGUID());
+                Player *const inviter = ObjectAccessor::FindPlayer(grp->GetLeaderGUID());
                 if(!inviter) return;
                 WorldPacket p;
                 if(!canObeyCommandFrom(*inviter))
@@ -1436,7 +1436,7 @@ void PlayerbotAI::HandleBotOutgoingPacket(const WorldPacket &packet)
                 Spell *const pSpell = m_bot->FindCurrentSpellBySpellId(spellId);
                 if(!pSpell) return;
                 if(pSpell->IsChannelActive() || pSpell->IsAutoRepeat())
-                    SetIgnoreUpdateTime( (((float)GetSpellDuration(pSpell->m_spellInfo) / 1000.0f) + 1.0f) );
+                    SetIgnoreUpdateTime(6);
                 else if(pSpell->IsAutoRepeat())
                     SetIgnoreUpdateTime(6);
                 else {
@@ -1461,9 +1461,9 @@ void PlayerbotAI::HandleBotOutgoingPacket(const WorldPacket &packet)
                 case TEXT_EMOTE_BOW:
                 {
                     //Buff anyone who bows before me. Useful for players not in bot's group
-                    Player *pPlayer = sObjectMgr->GetPlayer(guid);
+                    Player *pPlayer = ObjectAccessor::FindPlayer(guid);
 
-                    Player *const bot =sObjectMgr->GetPlayer(pPlayer->GetSelection());
+                    Player *const bot = ObjectAccessor::FindPlayer(pPlayer->GetSelection());
 
                     if(bot && bot->GetGUID()==m_bot->GetGUID() &&
                        bot->GetPlayerbotAI()->GetClassAI())
@@ -1505,7 +1505,7 @@ void PlayerbotAI::HandleBotOutgoingPacket(const WorldPacket &packet)
             p>>msgtype; p>>language; p>>guid; p>>language2; p>>guid2; p>>textlen;
             p>>msg;
 
-            Player * fromPlayer = sObjectMgr->GetPlayer(guid);
+            Player * fromPlayer = ObjectAccessor::FindPlayer(guid);
             if (fromPlayer == NULL) break;
             const std::string text = msg;
             HandleCommand(text, *fromPlayer);
@@ -1649,8 +1649,8 @@ void PlayerbotAI::UseMount() const
         int32 master_speed2 = 0;
         if(!m_master->GetAuraEffectsByType(SPELL_AURA_MOUNTED).empty())
         {
-            master_speed1 = m_master->GetAuraEffectsByType(SPELL_AURA_MOUNTED).front()->GetSpellProto()->EffectBasePoints[1];
-            master_speed2 = m_master->GetAuraEffectsByType(SPELL_AURA_MOUNTED).front()->GetSpellProto()->EffectBasePoints[2];
+            master_speed1 = m_master->GetAuraEffectsByType(SPELL_AURA_MOUNTED).front()->GetSpellInfo()->Effects[1].CalcValue();
+            master_speed2 = m_master->GetAuraEffectsByType(SPELL_AURA_MOUNTED).front()->GetSpellInfo()->Effects[2].CalcValue();
         }
 //sLog->outError ("master_speed1 = %d", master_speed1);
 //sLog->outError ("master_speed2 = %d", master_speed2);
@@ -1659,7 +1659,7 @@ void PlayerbotAI::UseMount() const
         for(PlayerSpellMap::iterator itr = m_bot->GetSpellMap().begin(); itr != m_bot->GetSpellMap().end(); ++itr)
         {
             uint32 spellId = itr->first;
-            if(itr->second->state == PLAYERSPELL_REMOVED || itr->second->disabled || IsPassiveSpell(spellId))
+            if(itr->second->state == PLAYERSPELL_REMOVED || itr->second->disabled || SPELL_ATTR0_PASSIVE)
                 continue;
             const SpellEntry *pSpellInfo = sSpellStore.LookupEntry(spellId);
             if(!pSpellInfo)
@@ -2435,7 +2435,7 @@ bool PlayerbotAI::CastSpell(const SpellEntry * pSpellInfo, Unit *target, bool ch
     if (!target)
     {
         //NEGATIVE SPELL
-        if (sSpellMgr->GetSpellCustomAttr(spellId) & SPELL_ATTR0_CU_NEGATIVE)
+        if (SPELL_CUSTOM_ERROR_NONE & SPELL_ATTR0_CU_NEGATIVE)
         {
             if (m_bot->GetSelection() <= 0) return false;
             else
@@ -2452,7 +2452,7 @@ bool PlayerbotAI::CastSpell(const SpellEntry * pSpellInfo, Unit *target, bool ch
     if (!triggered && checkFirst && !CanCast(pSpellInfo, target, castExistingAura, skipFriendlyCheck, skipEquipStanceCheck) ) { return false; }
     if ( m_bot->GetSelection() != target->GetGUID() ) { m_bot->SetSelection(target->GetGUID()); } //if target is different than selection apply it
 
-    m_bot->CastSpell(target, pSpellInfo, triggered); //CAST THE SPELL
+    m_bot->CastSpell(target, uint32(spellId), triggered); //CAST THE SPELL
     if ( m_bot->GetSelection() != oldSel ) { m_bot->SetSelection(oldSel); } // Restore if target changed to cast
 
     // Check if the casting started..
@@ -2462,7 +2462,7 @@ bool PlayerbotAI::CastSpell(const SpellEntry * pSpellInfo, Unit *target, bool ch
     // Trigger Pseudo Global Cooldown and consider casttime
     float GCD = 1.5f;
     if (m_bot->getPowerType() == POWER_ENERGY) GCD = 1;
-    float psCastTime = ((float)pSpell->GetCastTime()) / 1000.0f;
+    float psCastTime = ((float)pSpell->CalcCastTime()) / 1000.0f;
     if (psCastTime - GCD > -0.3f) GCD = 0.3f; //Global cooldown won't be an issiue for casts (0.3 secs is for safe next cast)
     else { GCD -= psCastTime; } //Remaining GCD after cast..
     //float psRecoveryTime = GetSpellRecoveryTime(pSpellInfo) / 1000;
@@ -2507,7 +2507,7 @@ bool PlayerbotAI::CanCast(const SpellEntry * pSpellInfo, Unit *target, bool cast
     if (!target)
     {
         //NEGATIVE SPELL
-        if (sSpellMgr->GetSpellCustomAttr(spellId) & SPELL_ATTR0_CU_NEGATIVE)
+        if (SPELL_CUSTOM_ERROR_NONE & SPELL_ATTR0_CU_NEGATIVE)
         {
             if (m_bot->GetSelection() <= 0) return false;
             else
@@ -2534,9 +2534,9 @@ bool PlayerbotAI::CanCast(const SpellEntry * pSpellInfo, Unit *target, bool cast
         //sLog->outDebug(LOG_FILTER_NETWORKIO, "DEBUG: Spell [%u] - Form [%X] - Need Form [%X] - Not Form [%X]", pSpellInfo->Id, formMask, pSpellInfo->Stances, pSpellInfo->StancesNot );
         if (pSpellInfo->Stances & formMask) { return true; }
         if (pSpellInfo->StancesNot && pSpellInfo->StancesNot & formMask) { return false; }
-        if (!m_bot->HasItemFitToSpellRequirements(pSpellInfo)) return false;
+        //if (!m_bot->HasItemFitToSpellRequirements(pSpellInfo)) return false;
     }
-
+/*
     //Power Costs
     const SpellSchoolMask pSpellSchool = GetSpellSchoolMask(pSpellInfo);
     uint32 pPowerCost = CalculatePowerCost(pSpellInfo, m_bot, pSpellSchool);
@@ -2570,7 +2570,7 @@ bool PlayerbotAI::CanCast(const SpellEntry * pSpellInfo, Unit *target, bool cast
         if (!m_bot->HasInArc(M_PI,target)) return false; //target is not in front
         if (pSpellRange->maxRangeHostile != 0) { if ( pSpellRange->maxRangeHostile < curDistance || pSpellRange->minRangeHostile > curDistance ) { return false; } }
         else if (curDistance > MELEE_RANGE) return false; //Out of range - Melee Range
-    }
+    }*/
 
     return true;
 }
@@ -2901,7 +2901,7 @@ void PlayerbotAI::UseItem(Item &item)
     //see SpellCastTargets::read in Spell.cpp to see other options
     //for setting target
 
-    uint32 target = TARGET_FLAG_SELF;
+    uint32 target = CAST_FLAG_NONE;
 
     WorldPacket *const packet = new WorldPacket(CMSG_USE_ITEM, 1 + 1 + 1 + 4 + 8 + 4 + 1);
     *packet << bagIndex << slot << cast_count << spellid << item_guid << glyphIndex << unk_flags << target;
@@ -3231,7 +3231,7 @@ void PlayerbotAI::HandleCommand(const std::string &text, Player &fromPlayer)
         {
             const uint32 spellId = itr->first;
 
-            if(itr->second->state == PLAYERSPELL_REMOVED || itr->second->disabled || IsPassiveSpell(spellId))
+            if(itr->second->state == PLAYERSPELL_REMOVED || itr->second->disabled || SPELL_ATTR0_PASSIVE)
                 continue;
 
             const SpellEntry *const pSpellInfo = sSpellStore.LookupEntry(spellId);
@@ -3251,10 +3251,10 @@ void PlayerbotAI::HandleCommand(const std::string &text, Player &fromPlayer)
             alreadySeenList += pSpellInfo->SpellName[loc];
             alreadySeenList += ",";
 
-            if(IsPositiveSpell(spellId))
+            /*if(IsPositiveSpell(spellId))
                 posOut << " |cffffffff|Hspell:" << spellId << "|h[" << pSpellInfo->SpellName[loc] << "]|h|r";
             else
-                negOut << " |cffffffff|Hspell:" << spellId << "|h[" << pSpellInfo->SpellName[loc] << "]|h|r";
+                negOut << " |cffffffff|Hspell:" << spellId << "|h[" << pSpellInfo->SpellName[loc] << "]|h|r";*/
         }
 
         ChatHandler ch(&fromPlayer);
@@ -3462,7 +3462,7 @@ void PlayerbotAI::HandleCommand(const std::string &text, Player &fromPlayer)
                      valid = false;
                      break;
                  }
-                 if  (sSpellMgr->IsPrimaryProfessionFirstRankSpell(tSpell->learnedSpell[i]))
+                 //if  (sSpellMgr->IsPrimaryProfessionFirstRankSpell(tSpell->learnedSpell[i]))
                      primary_prof_first_rank = true;
              }
              if (!valid)
@@ -3592,7 +3592,7 @@ void PlayerbotAI::HandleCommand(const std::string &text, Player &fromPlayer)
                      valid = false;
                      break;
                  }
-                 if  (sSpellMgr->IsPrimaryProfessionFirstRankSpell(tSpell->learnedSpell[i]))
+                 //if  (sSpellMgr->IsPrimaryProfessionFirstRankSpell(tSpell->learnedSpell[i]))
                      primary_prof_first_rank = true;
              }
              if (!valid)

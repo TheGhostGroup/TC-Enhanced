@@ -302,21 +302,21 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket & recv_data)
                 SendNotification(GetTrinityString(LANG_GM_SILENCE), GetPlayer()->GetName());
                 return;
             }
-
-            // If player is a Gamemaster and doesn't accept whisper, we auto-whitelist every player that the Gamemaster is talking to
-            if (!senderIsPlayer && !sender->isAcceptWhispers() && !sender->IsInWhisperWhiteList(receiver->GetGUID()))
-                sender->AddWhisperWhiteList(receiver->GetGUID());
-
             //Playerbot mod: handle whispered command to bot
-            if(player->GetPlayerbotAI())
+            if(GetPlayer()->GetPlayerbotAI())
             {
-                player->GetPlayerbotAI()->HandleCommand(msg, *GetPlayer());
+                GetPlayer()->GetPlayerbotAI()->HandleCommand(msg, *GetPlayer());
                 GetPlayer()->m_speakTime = 0;
                 GetPlayer()->m_speakCount = 0;
             }
             else {
             //end Playerbot mod
-                GetPlayer()->Whisper(msg, lang, player->GetGUID());
+            // If player is a Gamemaster and doesn't accept whisper, we auto-whitelist every player that the Gamemaster is talking to
+            if (!senderIsPlayer && !sender->isAcceptWhispers() && !sender->IsInWhisperWhiteList(receiver->GetGUID()))
+                sender->AddWhisperWhiteList(receiver->GetGUID());
+
+
+                GetPlayer()->Whisper(msg, lang, receiver->GetGUID());
             }
         } break;
         case CHAT_MSG_PARTY:

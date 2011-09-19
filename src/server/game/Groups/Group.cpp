@@ -395,7 +395,7 @@ bool Group::RemoveMember(uint64 guid, const RemoveMethod &method /*= GROUP_REMOV
 {
     BroadcastGroupUpdate();
     {
-        Player *player = sObjectMgr->GetPlayer(guid);
+        Player *player = ObjectAccessor::FindPlayer(guid);
 
         if(player)
         {
@@ -471,7 +471,7 @@ bool Group::RemoveMember(uint64 guid, const RemoveMethod &method /*= GROUP_REMOV
         // Reevaluate group enchanter if the leaving player had enchanting skill or the player is offline
         if ((player && player->GetSkillValue(SKILL_ENCHANTING)) || !player)
             ResetMaxEnchantingLevel();
-        if (sObjectMgr->GetPlayer(guid)) SendUpdate();
+        if (ObjectAccessor::FindPlayer(guid)) SendUpdate();
 		    ResetMaxEnchantingLevel();
 
         // Remove player from loot rolls
@@ -1276,7 +1276,7 @@ void Group::SendUpdate()
         {
             if(Creature *ci = player->GetBot())
             {
-                botGuid = (uint64&)ci->GetGUID();
+                botGuid = (uint64)ci->GetGUID();
             }
         }
 
@@ -2049,7 +2049,7 @@ void Group::SetGroupMemberFlag(uint64 guid, bool apply, GroupMemberFlags flag)
     // Preserve the new setting in the db
     CharacterDatabase.PExecute("UPDATE group_member SET memberFlags='%u' WHERE memberGuid='%u'", slot->flags, GUID_LOPART(guid));
 
-    Player *pPlayer = sObjectMgr->GetPlayer(guid);
+    Player *pPlayer = ObjectAccessor::FindPlayer(guid);
     if (pPlayer->GetPlayerbotAI()!=NULL) {
         if (apply) {
             pPlayer->HandleEmoteCommand(EMOTE_ONESHOT_ROAR);        // if pBot is maintank, acknowledge it
@@ -2065,7 +2065,7 @@ void Group::SetGroupMemberFlag(uint64 guid, bool apply, GroupMemberFlags flag)
             PlayerbotAI *ai = tPlayer->GetPlayerbotAI();
             ai->GetClassAI();
             if (tPlayer->IsPlayerbot())
-                tPlayer->GetPlayerbotAI()->GetClassAI()->SetMainTank(sObjectMgr->GetPlayer(guid));
+                tPlayer->GetPlayerbotAI()->GetClassAI()->SetMainTank(ObjectAccessor::FindPlayer(guid));
         }
 
     // Broadcast the changes to the group

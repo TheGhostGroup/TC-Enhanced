@@ -309,7 +309,7 @@ void WorldSession::HandleGroupUninviteGuidOpcode(WorldPacket & recv_data)
         //if(bot && bot->GetGUID() == guid) GetPlayer()->SetBotMustDie();
 
         //check that player is not a playerbot
-        Player *player = sObjectMgr->GetPlayer(guid);
+        Player *player = ObjectAccessor::FindPlayer(guid);
         if(player && player->IsPlayerbot()) GetPlayer()->GetSession()->LogoutPlayerBot(guid, true);
 
         return;

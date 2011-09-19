@@ -306,9 +306,6 @@ class instance_icecrown_citadel : public InstanceMapScript
                         if (TeamInInstance == ALLIANCE)
                             creature->UpdateEntry(NPC_SE_SKYBREAKER_MARINE, ALLIANCE);
                         break;
-                    case NPC_FROST_FREEZE_TRAP:
-                        ColdflameJetGUIDs.insert(creature->GetGUID());
-                        break;
                     case NPC_FESTERGUT:
                         FestergutGUID = creature->GetGUID();
                         break;
@@ -416,12 +413,6 @@ class instance_icecrown_citadel : public InstanceMapScript
                 }
 
                 return entry;
-            }
-
-            void OnCreatureRemove(Creature* creature)
-            {
-                if (creature->GetEntry() == NPC_FROST_FREEZE_TRAP)
-                    ColdflameJetGUIDs.erase(creature->GetGUID());
             }
 
             void OnCreatureDeath(Creature* creature)
@@ -1041,12 +1032,7 @@ class instance_icecrown_citadel : public InstanceMapScript
                     case DATA_COLDFLAME_JETS:
                         ColdflameJetsState = data;
                         if (ColdflameJetsState == DONE)
-                        {
                             SaveToDB();
-                            for (std::set<uint64>::iterator itr = ColdflameJetGUIDs.begin(); itr != ColdflameJetGUIDs.end(); ++itr)
-                                if (Creature* trap = instance->GetCreature(*itr))
-                                    trap->AI()->DoAction(ACTION_STOP_TRAPS);
-                        }
                         break;
                     case DATA_BLOOD_QUICKENING_STATE:
                     {
@@ -1381,7 +1367,6 @@ class instance_icecrown_citadel : public InstanceMapScript
                 return;
             }
         protected:
-            std::set<uint64> ColdflameJetGUIDs;
             uint64 LadyDeathwisperElevatorGUID;
             uint64 GunshipBattleMuradinGUID;
             uint64 GunshipBattleSaurfangGUID;

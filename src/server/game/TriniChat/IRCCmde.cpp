@@ -1006,8 +1006,8 @@ void IRCCmd::Lookup_Player(_CDATA *CD)
     if (_PARAMS[0] == "acct")
     {
         uint32 acctid = atoi(_PARAMS[1].c_str());
-        if (sAccountMgr->GetId(_PARAMS[1]))
-            acctid = sAccountMgr->GetId(_PARAMS[1]);
+        if (AccountMgr::GetId(_PARAMS[1]))
+            acctid = AccountMgr::GetId(_PARAMS[1]);
         if (acctid > 0)
         {
             std::string DateTime = "%a, %b %d, %Y - %h:%i%p";
