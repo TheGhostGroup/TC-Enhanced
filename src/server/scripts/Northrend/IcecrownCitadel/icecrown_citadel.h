@@ -302,7 +302,6 @@ enum CreaturesIds
 
     // The Lich King
     NPC_THE_LICH_KING                           = 36597,
-	NPC_WORLD_TRIGGER                           = 22515,
     NPC_TIRION_ICC                              = 38995,
     NPC_PLATFORM_DESTRUCTIBLE_EDGE_STALKER      = 22515,
     NPC_TERENAS_MENETHIL                        = 38579,
@@ -382,10 +381,9 @@ enum GameObjectsIds
     GO_DOODAD_ICECROWN_ROOSTPORTCULLIS_02   = 201381,
     GO_DOODAD_ICECROWN_ROOSTPORTCULLIS_03   = 201382,
     GO_DOODAD_ICECROWN_ROOSTPORTCULLIS_04   = 201383,
-    GO_DREAMWALKER_CACHE_10_N               = 201959,
-    GO_DREAMWALKER_CACHE_10_H               = 202338,
-    GO_DREAMWALKER_CACHE_25_N               = 202339,
-    GO_DREAMWALKER_CACHE_25_H               = 202340,
+
+
+
 
     // Sindragosa
     GO_SINDRAGOSA_ENTRANCE_DOOR             = 201373,
@@ -419,7 +417,6 @@ enum AchievementCriteriaIds
     CRITERIA_NECK_DEEP_IN_VILE_10H      = 13163,
     CRITERIA_NECK_DEEP_IN_VILE_25H      = 13164,
     CRITERIA_NECK_DEEP_IN_VILE_25N      = 13243,
-
     // Lord Marrowgar
     CRITERIA_BONED_10N                  = 12775,
     CRITERIA_BONED_25N                  = 12962,
@@ -478,7 +475,6 @@ enum SharedActions
     // Sindragosa
     ACTION_START_FROSTWYRM      = -368530,
     ACTION_TRIGGER_ASPHYXIATION = -368531,
-    ACTION_BOMB_LANDED          = -368532,
 };
 
 enum WeekliesICC
@@ -502,14 +498,6 @@ enum WorldStatesICC
     WORLDSTATE_SHOW_ATTEMPTS        = 4940,
     WORLDSTATE_ATTEMPTS_REMAINING   = 4941,
     WORLDSTATE_ATTEMPTS_MAX         = 4942,
-};
-
-enum AreaTriggers
-{
-    AREATRIGGER_RAMPARTS_BOTTOMLEFT = 5628,
-    AREATRIGGER_RAMPARTS_TOPLEFT    = 5629,
-    AREATRIGGER_RAMPARTS_BOTTOMRIGHT= 5630,
-    AREATRIGGER_RAMPARTS_TOPRIGHT   = 5631,
 };
 
 class spell_trigger_spell_from_caster : public SpellScriptLoader
@@ -564,5 +552,4 @@ CreatureAI* GetIcecrownCitadelAI(Creature* creature)
 }
 
 void TeleportPlayerToFrozenThrone(Player *player);
-
 #endif // ICECROWN_CITADEL_H_

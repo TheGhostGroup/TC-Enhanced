@@ -20,7 +20,6 @@
 #include "InstanceScript.h"
 #include "ScriptedCreature.h"
 #include "Map.h"
-#include "Transport.h"
 #include "PoolMgr.h"
 #include "icecrown_citadel.h"
 
@@ -89,8 +88,6 @@ class instance_icecrown_citadel : public InstanceMapScript
                 TeamInInstance = 0;
                 HeroicAttempts = MaxHeroicAttempts;
                 LadyDeathwisperElevatorGUID = 0;
-                GunshipBattleMuradinGUID = 0;
-                GunshipBattleSaurfangGUID = 0;
                 DeathbringerSaurfangGUID = 0;
                 DeathbringerSaurfangDoorGUID = 0;
                 DeathbringerSaurfangEventGUID = 0;
@@ -118,22 +115,7 @@ class instance_icecrown_citadel : public InstanceMapScript
                 SindragosaGUID = 0;
                 SpinestalkerGUID = 0;
                 RimefangGUID = 0;
-                uiDreamwalkerCache = 0;
                 TheLichKingGUID = 0;
-                uiTirion = 0;
-                uiTerenasFighter = 0;
-                uiSpiritWarden = 0;
-                uiIceShard1 = 0;
-                uiIceShard2 = 0;
-                uiIceShard3 = 0;
-                uiIceShard4 = 0;
-                uiFrostyEdgeInner = 0;
-                uiFrostyEdgeOuter = 0;
-                uiEdgeDestroyWarning = 0;
-                uilavaman = 0;
-                uihangingman = 0;
-                IsNeckDeep = true;
-                IsNecroticStack = true;
                 FrostwyrmCount = 0;
                 SpinestalkerTrashCount = 0;
                 RimefangTrashCount = 0;
@@ -143,9 +125,6 @@ class instance_icecrown_citadel : public InstanceMapScript
                 IsOrbWhispererEligible = true;
                 ColdflameJetsState = NOT_STARTED;
                 BloodQuickeningState = NOT_STARTED;
-                FirstSquadState = NOT_STARTED;
-                SecondSquadState = NOT_STARTED;
-                SpireFrostWyrmState = NOT_STARTED;
                 BloodQuickeningTimer = 0;
                 BloodQuickeningMinutes = 0;
             }
@@ -212,84 +191,6 @@ class instance_icecrown_citadel : public InstanceMapScript
                     case NPC_GARROSH_HELLSCREAM:
                         if (TeamInInstance == ALLIANCE)
                             creature->UpdateEntry(NPC_KING_VARIAN_WRYNN, ALLIANCE);
-                        break;
-                    case NPC_KORKRON_PRIMALIST:
-                        if (TeamInInstance == ALLIANCE)
-                            creature->UpdateEntry(NPC_SKYBREAKER_HIEROPHANT, ALLIANCE);
-                        break;
-                    case NPC_KORKRON_DEFENDER:
-                        if (TeamInInstance == ALLIANCE)
-                            creature->UpdateEntry(NPC_SKYBREAKER_PROTECTOR, ALLIANCE);
-                        break;
-                    case NPC_KORKRON_NECROLYTE:
-                        if (TeamInInstance == ALLIANCE)
-                            creature->UpdateEntry(NPC_SKYBREAKER_SUMMONER, ALLIANCE);
-                        break;
-                    case NPC_KORKRON_ORACLE:
-                        if (TeamInInstance == ALLIANCE)
-                            creature->UpdateEntry(NPC_SKYBREAKER_LIGHT, ALLIANCE);
-                        break;
-                    case NPC_KORKRON_REAVER:
-                        if (TeamInInstance == ALLIANCE)
-                            creature->UpdateEntry(NPC_SKYBREAKER_DREADBLADE, ALLIANCE);
-                        break;
-                    case NPC_KORKRON_SNIPER:
-                        if (TeamInInstance == ALLIANCE)
-                            creature->UpdateEntry(NPC_SKYBREAKER_MARKSMAN, ALLIANCE);
-                        break;
-                    case NPC_KORKRON_TEMPLAR:
-                        if (TeamInInstance == ALLIANCE)
-                            creature->UpdateEntry(NPC_SKYBREAKER_VICAR, ALLIANCE);
-                        break;
-                    case NPC_KORKRON_VANQUISHER:
-                        if (TeamInInstance == ALLIANCE)
-                            creature->UpdateEntry(NPC_SKYBREAKER_VINDICATOR, ALLIANCE);
-                        break;
-                    case NPC_KORKRON_INVOKER:
-                        if (TeamInInstance == ALLIANCE)
-                            creature->UpdateEntry(NPC_SKYBREAKER_SORCERER, ALLIANCE);
-                        break;
-                    case NPC_SKYBREAKER_HIEROPHANT:
-                        if (TeamInInstance == HORDE)
-                            creature->UpdateEntry(NPC_KORKRON_PRIMALIST, HORDE);
-                        break;
-                    case NPC_SKYBREAKER_PROTECTOR:
-                        if (TeamInInstance == HORDE)
-                            creature->UpdateEntry(NPC_KORKRON_DEFENDER, HORDE);
-                        break;
-                    case NPC_SKYBREAKER_SUMMONER:
-                        if (TeamInInstance == HORDE)
-                            creature->UpdateEntry(NPC_KORKRON_NECROLYTE, HORDE);
-                        break;
-                    case NPC_SKYBREAKER_LIGHT:
-                        if (TeamInInstance == HORDE)
-                            creature->UpdateEntry(NPC_KORKRON_ORACLE, HORDE);
-                        break;
-                    case NPC_SKYBREAKER_DREADBLADE:
-                        if (TeamInInstance == HORDE)
-                            creature->UpdateEntry(NPC_KORKRON_REAVER, HORDE);
-                        break;
-                    case NPC_SKYBREAKER_MARKSMAN:
-                        if (TeamInInstance == HORDE)
-                            creature->UpdateEntry(NPC_KORKRON_SNIPER, HORDE);
-                        break;
-                    case NPC_SKYBREAKER_VICAR:
-                        if (TeamInInstance == HORDE)
-                            creature->UpdateEntry(NPC_KORKRON_TEMPLAR, HORDE);
-                        break;
-                    case NPC_SKYBREAKER_VINDICATOR:
-                        if (TeamInInstance == HORDE)
-                            creature->UpdateEntry(NPC_KORKRON_VANQUISHER, HORDE);
-                        break;
-                    case NPC_SKYBREAKER_SORCERER:
-                        if (TeamInInstance == HORDE)
-                            creature->UpdateEntry(NPC_KORKRON_INVOKER, HORDE);
-                        break;
-                    case NPC_GB_MURADIN_BRONZEBEARD:
-                        GunshipBattleMuradinGUID = creature->GetGUID();
-                        break;
-                    case NPC_GB_HIGH_OVERLORD_SAURFANG:
-                        GunshipBattleSaurfangGUID = creature->GetGUID();
                         break;
                     case NPC_DEATHBRINGER_SAURFANG:
                         DeathbringerSaurfangGUID = creature->GetGUID();
@@ -367,15 +268,6 @@ class instance_icecrown_citadel : public InstanceMapScript
                         break;
                     case NPC_THE_LICH_KING:
                         TheLichKingGUID = creature->GetGUID();
-                        break;
-                    case NPC_TIRION_ICC:
-                        uiTirion = creature->GetGUID();
-                        break;
-                    case NPC_TERENAS_FIGHTER:
-                        uiTerenasFighter = creature->GetGUID();
-                        break;
-                    case NPC_SPIRIT_WARDEN:
-                        uiSpiritWarden = creature->GetGUID();
                         break;
                     default:
                         break;
@@ -532,51 +424,6 @@ class instance_icecrown_citadel : public InstanceMapScript
                     case GO_DRINK_ME:
                         PutricideTableGUID = go->GetGUID();
                         break;
-                    case GO_DREAMWALKER_CACHE_10_N:
-                    case GO_DREAMWALKER_CACHE_25_N:
-                    case GO_DREAMWALKER_CACHE_10_H:
-                    case GO_DREAMWALKER_CACHE_25_H:
-                    {
-                        uiDreamwalkerCache = go->GetGUID();
-                        break;
-                    }
-                    //Lich King
-                    case GO_LAVAMAN:
-                        uilavaman = go->GetGUID();
-                        if (GetBossState(DATA_THE_LICH_KING) == DONE)
-                            go->SetRespawnTime(5*DAY);
-                        break;
-                    case GO_HANGINGMAN:
-                        uihangingman = go->GetGUID();
-                        break;
-                    case GO_ICE_SHARD_1:
-                        uiIceShard1 = go->GetGUID();
-                        go->SetGoState(GetBossState(DATA_THE_LICH_KING) == DONE ? GO_STATE_ACTIVE : GO_STATE_READY);
-                        break;
-                    case GO_ICE_SHARD_2:     
-                        uiIceShard2 = go->GetGUID();
-                        go->SetGoState(GetBossState(DATA_THE_LICH_KING) == DONE ? GO_STATE_ACTIVE : GO_STATE_READY);
-                        break;
-                    case GO_ICE_SHARD_3:
-                        uiIceShard3 = go->GetGUID();
-                        go->SetGoState(GetBossState(DATA_THE_LICH_KING) == DONE ? GO_STATE_ACTIVE : GO_STATE_READY);
-                        break;
-                    case GO_ICE_SHARD_4:
-                        uiIceShard4 = go->GetGUID();
-                        go->SetGoState(GetBossState(DATA_THE_LICH_KING) == DONE ? GO_STATE_ACTIVE : GO_STATE_READY);
-                        break;
-                    case GO_FROSTY_EDGE_OUTER:
-                        uiFrostyEdgeOuter = go->GetGUID();
-                        go->SetGoState(GO_STATE_ACTIVE);
-                        break;
-                    case GO_FROSTY_EDGE_INNER:
-                        uiFrostyEdgeInner = go->GetGUID();
-                        go->SetGoState(GO_STATE_READY);
-                        break;
-                    case GO_EDGE_DESTROY_WARNING:
-                        uiEdgeDestroyWarning = go->GetGUID();
-                        go->SetGoState(GO_STATE_READY);
-                        break;
                     default:
                         break;
                 }
@@ -634,12 +481,6 @@ class instance_icecrown_citadel : public InstanceMapScript
                         return BloodQuickeningState;
                     case DATA_HEROIC_ATTEMPTS:
                         return HeroicAttempts;
-                    case DATA_FIRST_SQUAD_STATE:
-                        return FirstSquadState;
-                    case DATA_SECOND_SQUAD_STATE:
-                        return SecondSquadState;
-                    case DATA_SPIRE_FROSTWYRM_STATE:
-                        return SpireFrostWyrmState;
                     default:
                         break;
                 }
@@ -651,34 +492,6 @@ class instance_icecrown_citadel : public InstanceMapScript
             {
                 switch (type)
                 {
-                    case GUID_ICE_SHARD_1:
-                        return uiIceShard1;
-                    case GUID_ICE_SHARD_2:
-                        return uiIceShard2;
-                    case GUID_ICE_SHARD_3:
-                        return uiIceShard3;
-                    case GUID_ICE_SHARD_4:
-                        return uiIceShard4;
-                    case GUID_FROSTY_EDGE_OUTER:
-                        return uiFrostyEdgeOuter;
-                    case GUID_FROSTY_EDGE_INNER:
-                        return uiFrostyEdgeInner;
-                    case GUID_EDGE_DESTROY_WARNING:
-                        return uiEdgeDestroyWarning;
-                    case GUID_LAVAMAN:
-                        return uilavaman;
-                    case GUID_HANGINGMAN:
-                        return uihangingman;
-                    case GUID_TIRION:
-                           return uiTirion;
-                    case GUID_TERENAS_FIGHTER:
-                        return uiTerenasFighter;
-                    case GUID_SPIRIT_WARDEN:
-                        return uiSpiritWarden;
-                    case DATA_GB_HIGH_OVERLORD_SAURFANG:
-                        return GunshipBattleSaurfangGUID;
-                    case DATA_GB_MURADIN_BRONZEBEARD:
-                        return GunshipBattleMuradinGUID;
                     case DATA_DEATHBRINGER_SAURFANG:
                         return DeathbringerSaurfangGUID;
                     case DATA_SAURFANG_EVENT_NPC:
@@ -751,18 +564,6 @@ class instance_icecrown_citadel : public InstanceMapScript
                                 elevator->SetUInt32Value(GAMEOBJECT_LEVEL, 0);
                                 elevator->SetGoState(GO_STATE_READY);
                             }
-                        }
-                        break;
-                    case DATA_GUNSHIP_EVENT:
-                        switch(state)
-                        {
-                            case DONE:
-                            case FAIL:
-                                // Here we'll handle the movement of the gunship from the combat zone to the room where we fight Saurfang
-                                break;
-                            case NOT_STARTED:
-                                // Spawn the transport
-                                break;
                         }
                         break;
                     case DATA_DEATHBRINGER_SAURFANG:
@@ -844,12 +645,6 @@ class instance_icecrown_citadel : public InstanceMapScript
                     case DATA_VALITHRIA_DREAMWALKER:
                         if (state == DONE && sPoolMgr->IsSpawnedObject<Quest>(WeeklyQuestData[8].questId[instance->GetSpawnMode() & 1]))
                             instance->SummonCreature(NPC_VALITHRIA_DREAMWALKER_QUEST, ValithriaSpawnPos);
-
-                        if (state == DONE)
-                        {
-                            if (GameObject* pChest = instance->GetGameObject(uiDreamwalkerCache))
-                                pChest->SetRespawnTime(pChest->GetRespawnDelay());
-                        }
                         break;
                     case DATA_SINDRAGOSA:
                         HandleGameObject(FrostwingSigilGUID, state != DONE);
@@ -877,20 +672,6 @@ class instance_icecrown_citadel : public InstanceMapScript
                                         theLichKing->DespawnOrUnsummon();
                             }
                         }
-                        if (state == NOT_STARTED)
-                        {
-                            if (GameObject *go = instance->GetGameObject(uilavaman))
-                                go->SetPhaseMask(2,true);
-                        }
-                        else if (state == DONE)
-                        {
-                            if (GameObject *go = instance->GetGameObject(uilavaman))
-                                go->SetPhaseMask(1,true);
-                            if (GameObject *go = instance->GetGameObject(uilavaman))
-                                go->SetRespawnTime(5*DAY);;
-                            if (GameObject *go = instance->GetGameObject(uihangingman))
-                                go->SetPhaseMask(2,true);
-                        }
                         break;
                     default:
                         break;
@@ -903,36 +684,6 @@ class instance_icecrown_citadel : public InstanceMapScript
             {
                 switch (type)
                 {
-					case DATA_FIRST_SQUAD_STATE:
-                    {
-                        if (data == FirstSquadState)
-                            return;
-
-                        FirstSquadState = data;
-                        break;
-                    }
-                    case DATA_SECOND_SQUAD_STATE:
-                    {
-                        if (data == SecondSquadState)
-                            return;
-
-                        SecondSquadState = data;
-                        break;
-                    }
-                    case DATA_SPIRE_FROSTWYRM_STATE:
-                    {
-                        if (data == SpireFrostWyrmState)
-                            return;
-
-                        SpireFrostWyrmState = data;
-                        break;
-                    }
-                    case DATA_NECK_DEEP_ACHIEVEMENT:         
-                        IsNeckDeep = data ? true : false;
-                        break;
-                    case DATA_BEEN_WAITING_ACHIEVEMENT:         
-                        IsNecroticStack = data ? true : false;
-                        break;
                     case DATA_BONED_ACHIEVEMENT:
                         IsBonedEligible = data ? true : false;
                         break;
@@ -1074,16 +825,6 @@ class instance_icecrown_citadel : public InstanceMapScript
             {
                 switch (criteria_id)
                 {
-                    case CRITERIA_WAITING_A_LONG_TIME_10N:
-                    case CRITERIA_WAITING_A_LONG_TIME_10H:
-                    case CRITERIA_WAITING_A_LONG_TIME_25N:
-                    case CRITERIA_WAITING_A_LONG_TIME_25H:
-                        return IsNecroticStack;
-                    case CRITERIA_NECK_DEEP_IN_VILE_10N:
-                    case CRITERIA_NECK_DEEP_IN_VILE_10H:
-                    case CRITERIA_NECK_DEEP_IN_VILE_25N:
-                    case CRITERIA_NECK_DEEP_IN_VILE_25H:
-                        return IsNeckDeep;
                     case CRITERIA_BONED_10N:
                     case CRITERIA_BONED_25N:
                     case CRITERIA_BONED_10H:
@@ -1122,8 +863,6 @@ class instance_icecrown_citadel : public InstanceMapScript
 
             bool CheckRequiredBosses(uint32 bossId, Player const* player = NULL) const
             {
-                return true;
-
                 if (player && player->isGameMaster())
                     return true;
 
@@ -1255,34 +994,13 @@ class instance_icecrown_citadel : public InstanceMapScript
                 return true;
             }
 
-            Transport* SetTransportPosition(Transport* t, uint32 wpId, uint32 goEntry)
-            {
-                uint32 transportLowGuid = sObjectMgr->GenerateLowGuid(HIGHGUID_MO_TRANSPORT);
-                uint32 wantedWp = wpId;
-                uint32 wpCount = t->m_WayPoints.size();
-                if (wpId > wpCount)
-                {
-                    sLog->outError("ICCGunship::SetTransportWaypointId: Waypoint ID %u specified is greater than m_Waypoints.size(), assuming we want the last waypoint.", wpId);
-                    wantedWp = wpCount;
-                }
-
-                // Creates the Gameobject
-                if (!t->Create(transportLowGuid, goEntry, t->m_WayPoints[wantedWp].mapid, t->m_WayPoints[wantedWp].x, t->m_WayPoints[wantedWp].y, t->m_WayPoints[wantedWp].z, 0.0f, 0, 0))
-                {
-                    delete t;
-                    return NULL;
-                }
-
-                return t;
-            }
             std::string GetSaveData()
             {
                 OUT_SAVE_INST_DATA;
 
                 std::ostringstream saveStream;
                 saveStream << "I C " << GetBossSaveData() << HeroicAttempts << ' '
-                    << ColdflameJetsState << ' ' << BloodQuickeningState << ' ' << BloodQuickeningMinutes << ' '
-                    << FirstSquadState << ' ' << SecondSquadState << ' ' << SpireFrostWyrmState;
+                    << ColdflameJetsState << ' ' << BloodQuickeningState << ' ' << BloodQuickeningMinutes;
 
                 OUT_SAVE_INST_DATA_COMPLETE;
                 return saveStream.str();
@@ -1323,10 +1041,6 @@ class instance_icecrown_citadel : public InstanceMapScript
                     loadStream >> temp;
                     BloodQuickeningState = temp ? DONE : NOT_STARTED;   // DONE means finished (not success/fail)
                     loadStream >> BloodQuickeningMinutes;
-
-                    loadStream >> FirstSquadState;
-                    loadStream >> SecondSquadState;
-                    loadStream >> SpireFrostWyrmState;
                 }
                 else
                     OUT_LOAD_INST_DATA_FAIL;
@@ -1361,15 +1075,8 @@ class instance_icecrown_citadel : public InstanceMapScript
                 }
             }
 
-            void CreateTransport(uint32 goEntry, uint32 period)
-            {
-                // Still a WIP
-                return;
-            }
         protected:
             uint64 LadyDeathwisperElevatorGUID;
-            uint64 GunshipBattleMuradinGUID;
-            uint64 GunshipBattleSaurfangGUID;
             uint64 DeathbringerSaurfangGUID;
             uint64 DeathbringerSaurfangDoorGUID;
             uint64 DeathbringerSaurfangEventGUID;   // Muradin Bronzebeard or High Overlord Saurfang
@@ -1397,22 +1104,7 @@ class instance_icecrown_citadel : public InstanceMapScript
             uint64 SindragosaGUID;
             uint64 SpinestalkerGUID;
             uint64 RimefangGUID;
-            uint64 uiDreamwalkerCache;
             uint64 TheLichKingGUID;
-            uint64 uiTirion;
-            uint64 uiTerenasFighter;
-            uint64 uiSpiritWarden;
-            uint64 uiIceShard1;
-            uint64 uiIceShard2;
-            uint64 uiIceShard3;
-            uint64 uiIceShard4;
-            uint64 uiFrostyEdgeInner;
-            uint64 uiFrostyEdgeOuter;
-            uint64 uiEdgeDestroyWarning;
-            uint64 uilavaman;
-            uint64 uihangingman;
-            bool  IsNeckDeep;
-            bool  IsNecroticStack;
             uint32 TeamInInstance;
             uint32 BloodQuickeningTimer;
             uint32 ColdflameJetsState;
@@ -1422,9 +1114,6 @@ class instance_icecrown_citadel : public InstanceMapScript
             uint32 BloodQuickeningState;
             uint32 HeroicAttempts;
             uint16 BloodQuickeningMinutes;
-            uint32 FirstSquadState;
-            uint32 SecondSquadState;
-            uint32 SpireFrostWyrmState;
             bool IsBonedEligible;
             bool IsOozeDanceEligible;
             bool IsNauseaEligible;
