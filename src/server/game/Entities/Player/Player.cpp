@@ -640,7 +640,7 @@ UpdateMask Player::updateVisualBits;
 #ifdef _MSC_VER
 #pragma warning(disable:4355)
 #endif
-Player::Player (WorldSession *session): Unit(), m_achievementMgr(this), m_reputationMgr(this), m_MaxPlayerbots(9), m_bot_died(false)
+Player::Player (WorldSession* session): Unit(), m_achievementMgr(this), m_reputationMgr(this), m_MaxPlayerbots(9), m_bot_died(false)
  {
     // Playerbot mod
     m_playerbotAI = NULL;
@@ -2545,6 +2545,7 @@ bool Player::TeleportToBGEntryPoint()
 
     ScheduleDelayedOperation(DELAYED_BG_MOUNT_RESTORE);
     ScheduleDelayedOperation(DELAYED_BG_TAXI_RESTORE);
+    ScheduleDelayedOperation(DELAYED_BG_GROUP_RESTORE);
     return TeleportTo(m_bgData.joinPos);
 }
 
@@ -2599,7 +2600,13 @@ void Player::ProcessDelayedOperations()
             ContinueTaxiFlight();
         }
     }
-
+    
+    if (m_DelayedOperations & DELAYED_BG_GROUP_RESTORE)
+    {
+        if (Group *g = GetGroup())
+            g->SendUpdateToPlayer(GetGUID());
+    }
+    
     //we have executed ALL delayed ops, so clear the flag
     m_DelayedOperations = 0;
 }
@@ -18955,13 +18962,13 @@ void Player::SaveToDB()
     {
         if (IsPlayerbot() && m_SaveOrgLocation == 1)
         {
-            ss << m_playerbotAI->GetStartMapID() << ', '
-            << (uint32)m_playerbotAI->GetStartInstanceID() << ', '
-            << (uint32)m_playerbotAI->GetStartDifficulty() << ', '
-            << finiteAlways(m_playerbotAI->GetStartX()) << ', '
-            << finiteAlways(m_playerbotAI->GetStartY()) << ', '
-            << finiteAlways(m_playerbotAI->GetStartZ()) << ', '
-            << finiteAlways(m_playerbotAI->GetStartO()) << ', ';
+            ss << m_playerbotAI->GetStartMapID() << ", "
+            << (uint32)m_playerbotAI->GetStartInstanceID() << ", "
+            << (uint32)m_playerbotAI->GetStartDifficulty() << ", "
+            << finiteAlways(m_playerbotAI->GetStartX()) << ", "
+            << finiteAlways(m_playerbotAI->GetStartY()) << ", "
+            << finiteAlways(m_playerbotAI->GetStartZ()) << ", "
+            << finiteAlways(m_playerbotAI->GetStartO()) << ", ";
         }
         else
         {
@@ -18978,13 +18985,13 @@ void Player::SaveToDB()
     {
         if (IsPlayerbot() && m_SaveOrgLocation == 1)
         {
-            ss << m_playerbotAI->GetStartMapID() << ', '
-            << (uint32)m_playerbotAI->GetStartInstanceID() << ', '
-            << (uint32)m_playerbotAI->GetStartDifficulty() << ', '
-            << finiteAlways(m_playerbotAI->GetStartX()) << ', '
-            << finiteAlways(m_playerbotAI->GetStartY()) << ', '
-            << finiteAlways(m_playerbotAI->GetStartZ()) << ', '
-            << finiteAlways(m_playerbotAI->GetStartO()) << ', ';
+            ss << m_playerbotAI->GetStartMapID() << ", "
+            << (uint32)m_playerbotAI->GetStartInstanceID() << ", "
+            << (uint32)m_playerbotAI->GetStartDifficulty() << ", "
+            << finiteAlways(m_playerbotAI->GetStartX()) << ", "
+            << finiteAlways(m_playerbotAI->GetStartY()) << ", "
+            << finiteAlways(m_playerbotAI->GetStartZ()) << ", "
+            << finiteAlways(m_playerbotAI->GetStartO()) << ", ";
         }
         else
         {
